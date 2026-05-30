@@ -1,14 +1,10 @@
 package com.github.sachin.lootin.listeners;
 
-import com.github.sachin.lootin.api.LootinInventoryOpenEvent;
-import com.github.sachin.lootin.compat.ValhallaMMOListner;
 import com.github.sachin.lootin.utils.ChestUtils;
 import com.github.sachin.lootin.utils.ContainerType;
 import com.github.sachin.lootin.utils.LConstants;
 import com.github.sachin.lootin.utils.LootinGui;
-
-import org.bukkit.Material;
-import org.bukkit.block.*;
+import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.minecart.StorageMinecart;
 import org.bukkit.event.EventHandler;
@@ -19,11 +15,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.loot.LootTable;
 import org.bukkit.loot.Lootable;
-
-import java.util.List;
 
 public class InventoryListeners extends BaseListener {
 
@@ -32,51 +24,56 @@ public class InventoryListeners extends BaseListener {
         if (e.getAction() != Action.RIGHT_CLICK_BLOCK) {
             return;
         }
+
         Player player = e.getPlayer();
-        BlockState state = e.getClickedBlock().getState();;
-//        ContainerType containerType = ChestUtils.getContainerType((L))
+        BlockState state = e.getClickedBlock().getState();
+        //        ContainerType containerType = ChestUtils.getContainerType((L))
         if ((e.useInteractedBlock() == PlayerInteractEvent.Result.DENY && !plugin.getConfig().getBoolean(LConstants.BYPASS_GREIF_PLUGINS))) {
             return;
         }
-        if(state instanceof Lootable && ChestUtils.getContainerType((Lootable)state) != null){
-            Lootable lootable = (Lootable) state;
+
+        if (state instanceof Lootable lootable && ChestUtils.getContainerType((Lootable) state) != null) {
             ContainerType containerType = ChestUtils.getContainerType(lootable);
 //            if(plugin.isRunningValhallaMMO && ValhallaMMOListner.firstTimerChests.contains(state.getLocation())){
 //                ValhallaMMOListner.firstTimerChests.remove(state.getLocation());
 //                return;
 //            }
-            boolean denyInteraction = ChestUtils.openLootinInventory((Lootable) state,player,state.getLocation(),null);
-            if(denyInteraction) e.setUseInteractedBlock(PlayerInteractEvent.Result.DENY);
+            boolean denyInteraction = ChestUtils.openLootinInventory((Lootable) state, player, state.getLocation(), null);
+            if (denyInteraction) {
+                e.setUseInteractedBlock(PlayerInteractEvent.Result.DENY);
+            }
         }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onMinecartInteract(PlayerInteractEntityEvent e) {
-        if(plugin.isBlackListWorld(e.getPlayer().getWorld())) return;
-        if (!(e.getRightClicked() instanceof StorageMinecart)) {
+        if (plugin.isBlackListWorld(e.getPlayer().getWorld())) {
             return;
         }
-        StorageMinecart minecart = (StorageMinecart) e.getRightClicked();
+        if (!(e.getRightClicked() instanceof StorageMinecart minecart)) {
+            return;
+        }
         if (e.isCancelled() && !plugin.getConfig().getBoolean(LConstants.BYPASS_GREIF_PLUGINS)) {
             return;
         }
-        boolean denyInteraction = ChestUtils.openLootinInventory(minecart,e.getPlayer(),minecart.getLocation(),null);
-        if(denyInteraction) e.setCancelled(true);
+        boolean denyInteraction = ChestUtils.openLootinInventory(minecart, e.getPlayer(), minecart.getLocation(), null);
+        if (denyInteraction) {
+            e.setCancelled(true);
+        }
     }
 
 
-
     @EventHandler
-    public void onInventoryInteract(InventoryClickEvent e){
-        if(e.getInventory().getHolder() instanceof LootinGui){
-            ((LootinGui)e.getInventory().getHolder()).handleClickEvents(e);
+    public void onInventoryInteract(InventoryClickEvent e) {
+        if (e.getInventory().getHolder() instanceof LootinGui) {
+            ((LootinGui) e.getInventory().getHolder()).handleClickEvents(e);
         }
     }
 
     @EventHandler
-    public void onInventoryDrag(InventoryDragEvent e){
-        if(e.getInventory().getHolder() instanceof LootinGui){
-            ((LootinGui)e.getInventory().getHolder()).handleDragEvents(e);
+    public void onInventoryDrag(InventoryDragEvent e) {
+        if (e.getInventory().getHolder() instanceof LootinGui) {
+            ((LootinGui) e.getInventory().getHolder()).handleDragEvents(e);
         }
     }
 

@@ -25,24 +25,6 @@ public final class ServerVersion {
         return CURRENT;
     }
 
-    public boolean isAtLeast(int major, int minor) {
-        return isAtLeast(major, minor, 0);
-    }
-
-    public boolean isAtLeast(int major, int minor, int patch) {
-        if (this.major != major) {
-            return this.major > major;
-        }
-        if (this.minor != minor) {
-            return this.minor > minor;
-        }
-        return this.patch >= patch;
-    }
-
-    public boolean equals(int major, int minor, int patch) {
-        return this.major == major && this.minor == minor && this.patch == patch;
-    }
-
     private static ServerVersion parse(String raw) {
         if (raw == null) {
             return new ServerVersion(0, 0, 0);
@@ -66,5 +48,23 @@ public final class ServerVersion {
         } catch (NumberFormatException e) {
             return 0;
         }
+    }
+
+    public boolean isAtLeast(int major, int minor) {
+        return isAtLeast(major, minor, 0);
+    }
+
+    public boolean isAtLeast(int major, int minor, int patch) {
+        if (this.major != major) {
+            return this.major > major;
+        }
+        if (this.minor != minor) {
+            return this.minor > minor;
+        }
+        return this.patch >= patch;
+    }
+
+    public boolean equals(int major, int minor, int patch) {
+        return this.major == major && this.minor == minor && this.patch == patch;
     }
 }

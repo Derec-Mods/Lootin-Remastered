@@ -27,26 +27,28 @@ public class StructureGenerateListener extends BaseListener {
     private final BlockTransformer CONTAINER_TRANSFORMER = this::containerTransformer;
     private final EntityTransformer ITEMFRAME_TRANSFORMER = this::itemFrameTransformer;
     private final EntityTransformer MINECART_TRANSFORMER = this::minecartTransformer;
+
     @EventHandler
-    public void onStrucGenerate(AsyncStructureGenerateEvent e){
-        if(plugin.isBlackListWorld(e.getWorld())) return;
-        e.setBlockTransformer(LConstants.TRANSFORMER_CHEST_KEY, CONTAINER_TRANSFORMER);
-        if(e.getWorld().getEnvironment()== World.Environment.NORMAL){
-            e.setEntityTransformer(LConstants.TRANSFORMER_MINECART_KEY, MINECART_TRANSFORMER);
-        }
-        if(plugin.isRunningElytraVaults) {
+    public void onStrucGenerate(AsyncStructureGenerateEvent e) {
+        if (plugin.isBlackListWorld(e.getWorld())) {
             return;
         }
-        if(plugin.getConfig().getBoolean(LConstants.PER_PLAYER_ELYTRA_ITEM_FRAME) && e.getWorld().getEnvironment()== World.Environment.THE_END){
+        e.setBlockTransformer(LConstants.TRANSFORMER_CHEST_KEY, CONTAINER_TRANSFORMER);
+        if (e.getWorld().getEnvironment() == World.Environment.NORMAL) {
+            e.setEntityTransformer(LConstants.TRANSFORMER_MINECART_KEY, MINECART_TRANSFORMER);
+        }
+        if (plugin.isRunningElytraVaults) {
+            return;
+        }
+        if (plugin.getConfig().getBoolean(LConstants.PER_PLAYER_ELYTRA_ITEM_FRAME) && e.getWorld().getEnvironment() == World.Environment.THE_END) {
             e.setEntityTransformer(LConstants.TRANSFORMER_ITEMFRAME_KEY, ITEMFRAME_TRANSFORMER);
         }
     }
 
     public BlockState containerTransformer(@NotNull LimitedRegion region, int x, int y, int z, @NotNull BlockState block, @NotNull BlockTransformer.TransformationState state) {
-        if(block instanceof Lootable){
-            Lootable lootable = (Lootable) block;
+        if (block instanceof Lootable lootable) {
 
-            if(lootable.getLootTable() == null || Lootin.getPlugin().isBlackListedLootable(lootable.getLootTable(),block.getWorld())) {
+            if (lootable.getLootTable() == null || Lootin.getPlugin().isBlackListedLootable(lootable.getLootTable(), block.getWorld())) {
                 return block;
             }
             boolean isLootin = false;
@@ -56,17 +58,18 @@ public class StructureGenerateListener extends BaseListener {
                 isLootin = ChestUtils.isLootinContainer(null, block, container = (ChestUtils.isDoubleChest(block) ? ContainerType.DOUBLE_CHEST : ContainerType.CHEST));
             } else if (block.getType() == Material.BARREL) {
                 isLootin = ChestUtils.isLootinContainer(null, block, container = ContainerType.BARREL);
+            } else {
+                return block;
             }
-            else{return block;}
-            if(!isLootin){
-                ChestUtils.setLootinContainer(null,block,container);
+            if (!isLootin) {
+                ChestUtils.setLootinContainer(null, block, container);
             }
         }
         return block;
     }
 
     public boolean itemFrameTransformer(@NotNull LimitedRegion region, int x, int y, int z, @NotNull Entity entity, boolean allowedToSpawn) {
-        if(entity.getType()== EntityType.ITEM_FRAME){
+        if (entity.getType() == EntityType.ITEM_FRAME) {
             ItemFrame frame = (ItemFrame) entity;
             frame.getPersistentDataContainer().set(LConstants.ITEM_FRAME_ELYTRA_KEY, PersistentDataType.INTEGER, 1);
 
@@ -75,10 +78,10 @@ public class StructureGenerateListener extends BaseListener {
     }
 
     public boolean minecartTransformer(@NotNull LimitedRegion region, int x, int y, int z, @NotNull Entity entity, boolean allowedToSpawn) {
-        if(entity.getType()==EntityType.MINECART_CHEST){
+        if (entity.getType() == EntityType.MINECART_CHEST) {
             StorageMinecart minecart = (StorageMinecart) entity;
-            if (!ChestUtils.isLootinContainer(minecart, null, ContainerType.MINECART)){
-                if(minecart.getLootTable() == null || Lootin.getPlugin().isBlackListedLootable(minecart.getLootTable(),minecart.getWorld())) {
+            if (!ChestUtils.isLootinContainer(minecart, null, ContainerType.MINECART)) {
+                if (minecart.getLootTable() == null || Lootin.getPlugin().isBlackListedLootable(minecart.getLootTable(), minecart.getWorld())) {
                     return allowedToSpawn;
                 }
                 ChestUtils.setLootinContainer(minecart, null, ContainerType.MINECART);

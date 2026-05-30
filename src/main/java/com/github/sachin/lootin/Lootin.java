@@ -20,7 +20,6 @@ import com.github.sachin.lootin.utils.cooldown.CooldownContainer;
 
 import com.github.sachin.lootin.utils.storage.LootinContainer;
 import com.github.sachin.lootin.utils.storage.StorageConverterUtility;
-import com.github.sachin.prilib.McVersion;
 import com.github.sachin.prilib.Prilib;
 import org.bukkit.*;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -357,15 +356,14 @@ public final class Lootin extends JavaPlugin {
     }
 
     public boolean isPost1_19(){
-
-        return McVersion.current().isAtLeast(new McVersion(1,19));
+        return ServerVersion.current().isAtLeast(1,19);
     }
 
     public boolean isPost1_20_R2(){
-        return McVersion.current().isAtLeast(new McVersion(1,20,2));
+        return ServerVersion.current().isAtLeast(1,20,2);
     }
 
-    public boolean is1_16(){ return McVersion.current().equals(new McVersion(1,16,5));}
+    public boolean is1_16(){ return ServerVersion.current().equals(1,16,5);}
 
     public PaperCommandManager getCommandManager() {
         return commandManager;

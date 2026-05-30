@@ -20,12 +20,18 @@ public class ItemFrameListener extends BaseListener{
 
     @EventHandler
     public void onRemove(HangingBreakEvent e){
+        if(plugin.isRunningElytraVaults) {
+            return;
+        }
         if(e.getEntity().getPersistentDataContainer().has(LConstants.ITEM_FRAME_ELYTRA_KEY, PersistentDataType.INTEGER)){
             e.setCancelled(true);
         }
     }
     @EventHandler
     public void onElytraRemove(EntityDamageByEntityEvent e){
+        if(plugin.isRunningElytraVaults) {
+            return;
+        }
         if(e.isCancelled()) return;
         if(e.getEntity().getType()== EntityType.ITEM_FRAME && plugin.getConfig().getBoolean(LConstants.PER_PLAYER_ELYTRA_ITEM_FRAME)){
             ItemFrame framea = (ItemFrame) e.getEntity();

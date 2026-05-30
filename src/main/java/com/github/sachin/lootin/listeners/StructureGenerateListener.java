@@ -34,6 +34,9 @@ public class StructureGenerateListener extends BaseListener {
         if(e.getWorld().getEnvironment()== World.Environment.NORMAL){
             e.setEntityTransformer(LConstants.TRANSFORMER_MINECART_KEY, MINECART_TRANSFORMER);
         }
+        if(plugin.isRunningElytraVaults) {
+            return;
+        }
         if(plugin.getConfig().getBoolean(LConstants.PER_PLAYER_ELYTRA_ITEM_FRAME) && e.getWorld().getEnvironment()== World.Environment.THE_END){
             e.setEntityTransformer(LConstants.TRANSFORMER_ITEMFRAME_KEY, ITEMFRAME_TRANSFORMER);
         }

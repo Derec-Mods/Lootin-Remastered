@@ -43,6 +43,9 @@ public class EntityMetaDataPacketListener extends PacketAdapter{
 //        Temporary
 //        if(ServerVersion.current().isAtLeast(1,21,7)) return;
         if(Lootin.getPlugin().isBlackListWorld(player.getWorld())) return;
+        if(Lootin.getPlugin().isRunningElytraVaults) {
+            return;
+        }
         Entity entity = null;
         try {
             entity = packet.getEntityModifier(event).read(0);

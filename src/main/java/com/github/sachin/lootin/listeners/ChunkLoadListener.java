@@ -37,6 +37,9 @@ public class ChunkLoadListener extends BaseListener{
         if(plugin.isBlackListWorld(chunk.getWorld())) return;
         if(!chunk.isLoaded()) return;
         if(!e.isNewChunk()) return;
+        if(plugin.isRunningElytraVaults) {
+            return;
+        }
         for(Entity entity : chunk.getEntities()){
             if(entity.getType()==EntityType.ITEM_FRAME){
                 if(chunk.getWorld().getEnvironment()==Environment.THE_END && plugin.getConfig().getBoolean(LConstants.PER_PLAYER_ELYTRA_ITEM_FRAME)){

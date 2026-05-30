@@ -1,5 +1,7 @@
 # Lootin Remastered
 
+This project is open-source and licensed under the GNU General Public License v3.0 (GPL-3.0). You are free to modify and distribute this software under the terms of the same license.
+
 Per player loot, perfect for survival servers! Lootin Remastered is a Spigot/Paper plugin that ensures container loot is unique for every player on the server. 
 When a player opens a naturally generated chest, barrel, or minecart, they receive their own personal loot drop, preventing structures from being cleared out by the first explorer.
 

@@ -81,8 +81,6 @@ public final class Lootin extends JavaPlugin {
 
     @Override
     public void onEnable() {
-
-
         prilib = new Prilib(this);
         prilib.initialize();
         if(!prilib.isNMSEnabled()){

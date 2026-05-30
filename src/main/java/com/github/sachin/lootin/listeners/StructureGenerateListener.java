@@ -78,7 +78,7 @@ public class StructureGenerateListener extends BaseListener {
     }
 
     public boolean minecartTransformer(@NotNull LimitedRegion region, int x, int y, int z, @NotNull Entity entity, boolean allowedToSpawn) {
-        if (entity.getType() == EntityType.MINECART_CHEST) {
+        if (entity.getType() == EntityType.CHEST_MINECART) {
             StorageMinecart minecart = (StorageMinecart) entity;
             if (!ChestUtils.isLootinContainer(minecart, null, ContainerType.MINECART)) {
                 if (minecart.getLootTable() == null || Lootin.getPlugin().isBlackListedLootable(minecart.getLootTable(), minecart.getWorld())) {

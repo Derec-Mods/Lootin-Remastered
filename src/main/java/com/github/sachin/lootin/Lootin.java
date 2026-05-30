@@ -62,6 +62,7 @@ public final class Lootin extends JavaPlugin {
 
     public boolean isRunningBetterStructures = false;
     public boolean isRunningCustomStructures = false;
+    public boolean isRunningElytraVaults = false;
 
     public boolean isRunningValhallaMMO = false;
     public boolean isRunningWG;
@@ -126,6 +127,10 @@ public final class Lootin extends JavaPlugin {
         reloadConfigs();
         // register listeners
         PluginManager pm = getServer().getPluginManager();
+        if(pm.isPluginEnabled("ElytraVaults")){
+            this.isRunningElytraVaults = true;
+            getLogger().info("Found ElytraVaults, disabling Elytra item frame handling.");
+        }
 //        if(isPost1_20_R2() && plugin.getConfig().getBoolean(LConstants.USE_NEW_LISTENER,true)){
 //            getLogger().info("Registering new listener");
 //            pm.registerEvents(new StructureGenerateListener(),plugin);

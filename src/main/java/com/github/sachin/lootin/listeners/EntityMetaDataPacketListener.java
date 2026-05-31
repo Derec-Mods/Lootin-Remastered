@@ -9,7 +9,6 @@ import com.comphenix.protocol.wrappers.WrappedWatchableObject;
 import com.github.sachin.lootin.Lootin;
 import com.github.sachin.lootin.utils.LConstants;
 import com.github.sachin.lootin.utils.ServerVersion;
-import com.github.sachin.prilib.Prilib;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Entity;
@@ -50,34 +49,12 @@ public class EntityMetaDataPacketListener extends PacketAdapter {
         } catch (Exception ignored) {
         }
 
-        if (entity != null && entity.getType() == EntityType.ITEM_FRAME && entity.getPersistentDataContainer().has(LConstants.ITEM_FRAME_ELYTRA_KEY, PersistentDataType.INTEGER)) {
-            Prilib prilib = Lootin.getPlugin().getPrilib();
-            NamespacedKey key = Lootin.getKey(player.getUniqueId().toString());
-            if (Lootin.getPlugin().isPost1_19()) {
-                if (ServerVersion.current().isAtLeast(1, 21, 6)) {
-                    entity.getPersistentDataContainer().set(LConstants.ITEM_FRAME_ELYTRA_KEY, PersistentDataType.INTEGER, 9);
-                } else {
-                    entity.getPersistentDataContainer().set(LConstants.ITEM_FRAME_ELYTRA_KEY, PersistentDataType.INTEGER, 8);
-                }
-                Object newPacket = prilib.getNmsHandler().getElytraUpdatePacket(packet.getHandle(), entity, key);
-                if (newPacket != null) {
-                    event.setPacket(PacketContainer.fromPacket(newPacket));
-                }
-                return;
-
-            }
-            List<WrappedWatchableObject> objects = packet.getWatchableCollectionModifier().readSafely(0);
-            for (WrappedWatchableObject object : objects) {
-                if (object.getIndex() == 8) {
-                    if (entity.getPersistentDataContainer().has(key, PersistentDataType.INTEGER)) {
-                        object.setValue(new ItemStack(Material.AIR));
-                    }
-
-                }
-            }
-
-            packet.getWatchableCollectionModifier().write(0, objects);
-        }
+        // Elytra per-player visibility handling is temporarily disabled.
+        // Original logic crafted version-specific ENTITY_METADATA packets
+        // (via Prilib/NMS) so an ItemFrame's elytra could be hidden from
+        // specific players. This is commented out for now and will be
+        // reimplemented later using ProtocolLib or a maintained NMS adapter.
+        // idk lmaooo it's 4:39 in the morning and i just want to get this working again for derex smp
 
     }
 

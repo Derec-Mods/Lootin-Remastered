@@ -20,7 +20,6 @@ import com.github.sachin.lootin.utils.cooldown.CooldownContainer;
 
 import com.github.sachin.lootin.utils.storage.LootinContainer;
 import com.github.sachin.lootin.utils.storage.StorageConverterUtility;
-import com.github.sachin.prilib.Prilib;
 import org.bukkit.*;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -39,7 +38,7 @@ public final class Lootin extends JavaPlugin {
 
     private static Lootin plugin;
 
-    private Prilib prilib;
+//    private Prilib prilib;
     private PaperCommandManager commandManager;
 
     private Scheduler scheduler;
@@ -82,13 +81,13 @@ public final class Lootin extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        prilib = new Prilib(this);
-        prilib.initialize();
-        if(!prilib.isNMSEnabled()){
-            getLogger().severe("Running incompatible minecraft version, disabling lootin...");
-            this.getServer().getPluginManager().disablePlugin(this);
-            return;
-        }
+//        prilib = new Prilib(this);
+//        prilib.initialize();
+//        if(!prilib.isNMSEnabled()){
+//            getLogger().severe("Running incompatible minecraft version, disabling lootin...");
+//            this.getServer().getPluginManager().disablePlugin(this);
+//            return;
+//        }
         try {
             Class.forName("net.pl3x.purpur.event.PlayerAFKEvent");
             this.isRunningPurpur = true;
@@ -372,9 +371,9 @@ public final class Lootin extends JavaPlugin {
         return commandManager;
     }
 
-    public Prilib getPrilib() {
-        return prilib;
-    }
+//    public Prilib getPrilib() {
+//        return prilib;
+//    }
 
     public Scheduler getScheduler() {
         return scheduler;

@@ -18,7 +18,7 @@ repositories {
     maven { url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
     maven { url = 'https://oss.sonatype.org/content/groups/public/' }
     maven { url = 'https://repo.aikar.co/content/groups/aikar/' }
-    maven { url = 'https://repo.extendedclip.com/content/repositories/placeholderapi/' }
+    maven { url = 'https://repo.extendedclip.com/releases/' }
     maven { url = 'https://jitpack.io' }
     maven { url = 'https://maven.enginehub.org/repo/' }
     maven { url = 'https://repo.papermc.io/repository/maven-public/' }
@@ -39,7 +39,7 @@ dependencies {
     implementation files('lib/OhTheDungeon.jar')
 
     compileOnly 'me.athlaeos:valhallammo-dist:dev-0.4'
-    compileOnly 'me.clip:placeholderapi:2.10.9'
+    compileOnly 'me.clip:placeholderapi:2.12.2'
     compileOnly 'net.sourcewriters.spigot.rwg:legacy-api:3.0.0'
     compileOnly 'com.syntaxphoenix.syntaxapi:nbt:2.0.13'
     compileOnly 'com.syntaxphoenix.syntaxapi:random:2.0.12'

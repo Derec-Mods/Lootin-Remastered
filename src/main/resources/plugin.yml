@@ -2,7 +2,7 @@ name: Lootin
 version: ${version}
 main: com.github.sachin.lootin.Lootin
 api-version: 1.21
-authors: [ sachingorkar ]
+authors: [ sachingorkar, DerexXD ]
 softdepend: [ElytraVaults,Terra,Oh_the_dungeons_youll_go,PlaceholderAPI,ProtocolLib,BetterStructures,WorldGuard]
 description: Loot per player
 api: []

@@ -34,7 +34,7 @@ dependencies {
     implementation 'com.github.sachingorkar102:PriLib:1.0'
     implementation 'com.jeff-media:MorePersistentDataTypes:2.4.0'
 
-    implementation files('lib/CustomStructures-1.9.0.1.jar')
+//    implementation files('lib/CustomStructures-1.9.0.1.jar')
     implementation files('lib/BetterStructures-1.6.10.jar')
     implementation files('lib/OhTheDungeon.jar')
 

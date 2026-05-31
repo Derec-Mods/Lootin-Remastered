@@ -1,6 +1,15 @@
 package com.github.sachin.lootin.compat;
 
 import com.github.sachin.lootin.listeners.BaseListener;
+
+public class CustomStructuresListener extends BaseListener {
+    // Compatibility stub. Original implementation retained below for reference.
+}
+
+/*
+package com.github.sachin.lootin.compat;
+
+import com.github.sachin.lootin.listeners.BaseListener;
 import com.github.sachin.lootin.utils.ChestUtils;
 import com.github.sachin.lootin.utils.ContainerType;
 import com.github.sachin.lootin.utils.LConstants;
@@ -63,3 +72,4 @@ public class CustomStructuresListener extends BaseListener{
 
     
 }
+*/

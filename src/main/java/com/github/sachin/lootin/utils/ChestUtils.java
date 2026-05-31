@@ -9,7 +9,6 @@ import com.github.sachin.lootin.Lootin;
 import com.github.sachin.lootin.api.LootinInventoryOpenEvent;
 import com.github.sachin.lootin.compat.BetterStructuresListener;
 
-import com.github.sachin.lootin.compat.CustomStructuresListener;
 import com.github.sachin.lootin.utils.cooldown.Cooldown;
 import com.github.sachin.lootin.utils.storage.ItemSerializer;
 import com.github.sachin.lootin.utils.storage.LootinContainer;
@@ -151,17 +150,17 @@ public class ChestUtils{
             BetterStructuresListener.refillChest(chest);
             return;
         }
-        if(plugin.isRunningCustomStructures &&
-           plugin.getWorldManager().shouldResetSeed(player.getWorld().getName()) &&
-           data.has(LConstants.CUSTOM_STRUC_KEY,PersistentDataType.STRING)){
-            if(CustomStructuresListener.isMinecraftLoottable((Container) container)){
-                lootTableKey = CustomStructuresListener.getLoottables((Container) container).next().getName();
-            }
-            else{
-                CustomStructuresListener.reFillContainer((Container) container);
-                return;
-            }
-        }
+//        if(plugin.isRunningCustomStructures &&
+//           plugin.getWorldManager().shouldResetSeed(player.getWorld().getName()) &&
+//           data.has(LConstants.CUSTOM_STRUC_KEY,PersistentDataType.STRING)){
+//            if(CustomStructuresListener.isMinecraftLoottable((Container) container)){
+//                lootTableKey = CustomStructuresListener.getLoottables((Container) container).next().getName();
+//            }
+//            else{
+//                CustomStructuresListener.reFillContainer((Container) container);
+//                return;
+//            }
+//        }
         if(container.getLootTable() != null){
             lootTableKey = container.getLootTable().getKey().toString();
             data.set(LConstants.LOOTTABLE_KEY,PersistentDataType.STRING,lootTableKey);

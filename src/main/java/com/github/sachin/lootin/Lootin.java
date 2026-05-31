@@ -145,12 +145,12 @@ public final class Lootin extends JavaPlugin {
         pm.registerEvents(new ChestEvents(), plugin);
         pm.registerEvents(new ItemFrameListener(),plugin);
         pm.registerEvents(new LootGenerateListener(),plugin);
-        if(pm.isPluginEnabled("CustomStructures")){
-            this.isRunningCustomStructures = true;
-            getLogger().info("Found custom structures, registering listeners...");
-
-            pm.registerEvents(new CustomStructuresListener(), plugin);
-        }
+//        if(pm.isPluginEnabled("CustomStructures")){
+//            this.isRunningCustomStructures = true;
+//            getLogger().info("Found custom structures, registering listeners...");
+//
+//            pm.registerEvents(new CustomStructuresListener(), plugin);
+//        }
         if(pm.isPluginEnabled("Oh_the_dungeons_youll_go")){
             getLogger().info("Found OhTheDungeons, registering listeners...");
             pm.registerEvents(new OTDLootListener(), plugin);

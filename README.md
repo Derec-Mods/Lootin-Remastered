@@ -1,6 +1,8 @@
 # Lootin Remastered
 
-This plugin was originally created by sachingorkar102, who has permitted its posting provided that the source code remains available. This project is a revival fork of the original Lootin plugin. It is maintained as a continuation of the original work to provide modern version support, and is distributed under the [original project's license](https://github.com/sachingorkar102/Lootin-plugin/blob/main/LICENSE). All original rights and foundational credits belong to sachingorkar102.
+![Replace this with a description](https://cdn.modrinth.com/data/cached_images/a777d78fa432f6fd5d28750e04aba6e70e86b525_0.webp)
+
+This plugin was originally created by sachingorkar102 for 1.16.5, who has permitted its posting provided that the source code remains available. This project is a revival fork of the original Lootin plugin, maintained as a continuation of the original work to provide modern version support for newer APIs, and is distributed under the [original project's license](https://github.com/sachingorkar102/Lootin-plugin/blob/main/LICENSE). All original rights and foundational credits belong to sachingorkar102.
 
 ## Description 
 

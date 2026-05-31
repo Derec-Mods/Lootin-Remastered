@@ -103,7 +103,8 @@ public class Commands extends BaseCommand{
     }
 
     private void handleMinecartContainer(Player player) {
-        RayTraceResult raytrace = player.getWorld().rayTraceEntities(player.getEyeLocation(), player.getEyeLocation().getDirection(), 4, (en) -> en.getType() == EntityType.MINECART_CHEST);
+        RayTraceResult raytrace = player.getWorld().rayTraceEntities(player.getEyeLocation(),
+                player.getEyeLocation().getDirection(), 4, (en) -> en.getType() == EntityType.CHEST_MINECART);
         if (raytrace != null && raytrace.getHitEntity() != null) {
             StorageMinecart minecart = (StorageMinecart) raytrace.getHitEntity();
             if (!minecart.getInventory().isEmpty()) {
@@ -217,7 +218,8 @@ public class Commands extends BaseCommand{
         LootinContainer lootinContainer = null;
         PersistentDataHolder holder = null;
         RayTraceResult blockRay = player.rayTraceBlocks(4);
-        RayTraceResult entiryRay = player.getWorld().rayTraceEntities(player.getEyeLocation(), player.getEyeLocation().getDirection(), 4,(en) -> en.getType()==EntityType.MINECART_CHEST);
+        RayTraceResult entiryRay = player.getWorld().rayTraceEntities(player.getEyeLocation(),
+                player.getEyeLocation().getDirection(), 4,(en) -> en.getType()==EntityType.CHEST_MINECART);
         if(blockRay != null && blockRay.getHitBlock().getState() instanceof PersistentDataHolder){
             holder = (PersistentDataHolder) blockRay.getHitBlock().getState();
 

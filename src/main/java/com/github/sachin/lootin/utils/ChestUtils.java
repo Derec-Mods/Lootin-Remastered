@@ -174,7 +174,7 @@ public class ChestUtils{
         }
         if(lootTableKey != null){
             inventory.clear();
-            plugin.getPrilib().getNmsHandler().fill(player,container,lootTableKey,plugin.getWorldManager().shouldResetSeed(player.getWorld().getName()));
+            LootTableFiller.fill(player, container, lootTableKey, plugin.getWorldManager().shouldResetSeed(player.getWorld().getName()));
         }
     }
 

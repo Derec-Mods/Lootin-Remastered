@@ -9,7 +9,7 @@ description = 'Loot per player'
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+        languageVersion = JavaLanguageVersion.of(25)
     }
 }
 
@@ -26,8 +26,8 @@ repositories {
 }
 
 dependencies {
-    compileOnly 'dev.folia:folia-api:1.21.1-R0.1-SNAPSHOT'
-    compileOnly 'org.spigotmc:spigot-api:1.21.1-R0.1-SNAPSHOT'
+//    compileOnly 'dev.folia:folia-api:1.21.1-R0.1-SNAPSHOT'
+    compileOnly 'io.papermc.paper:paper-api:26.1.2.build.+'
     compileOnly 'org.jetbrains:annotations:21.0.1'
 
     implementation 'co.aikar:acf-paper:0.5.1-SNAPSHOT'
@@ -43,12 +43,12 @@ dependencies {
     compileOnly 'com.syntaxphoenix.syntaxapi:nbt:2.0.13'
     compileOnly 'com.syntaxphoenix.syntaxapi:random:2.0.12'
     compileOnly 'com.comphenix.protocol:ProtocolLib:4.7.0'
-    compileOnly 'com.sk89q.worldguard:worldguard-bukkit:7.0.4-SNAPSHOT'
+    compileOnly 'com.sk89q.worldguard:worldguard-bukkit:7.0.17'
 }
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
-    options.release = 21
+    options.release = 25
 }
 
 processResources {

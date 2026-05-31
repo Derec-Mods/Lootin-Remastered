@@ -43,7 +43,7 @@ dependencies {
 //    5.31.2026 bruh that Alex guy just used some AI to vibe code this ;-; no wonder why none of it works
 //    implementation files('lib/CustomStructures-1.9.0.1.jar')
 //    implementation files('lib/BetterStructures-1.6.10.jar')
-    implementation files('lib/OhTheDungeon.jar')
+    implementation files('lib/OhTheDungeonsYoullGo-1.21.7.jar')
 
     compileOnly 'me.athlaeos:valhallammo-dist:dev-0.4'
     compileOnly 'me.clip:placeholderapi:2.12.2'

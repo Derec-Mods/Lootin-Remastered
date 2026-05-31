@@ -1,3 +1,10 @@
+# derexXD
+# Gradle directories
+.gradle/
+build/
+*.jar
+!lib/**/*.jar
+
 # User-specific stuff
 .idea/
 

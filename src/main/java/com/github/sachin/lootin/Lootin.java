@@ -7,7 +7,7 @@ import java.util.regex.Matcher;
 
 import com.github.sachin.lootin.commands.Commands;
 import com.github.sachin.lootin.compat.*;
-import com.github.sachin.lootin.compat.rwg.RWGCompat;
+// import com.github.sachin.lootin.compat.rwg.RWGCompat; // RWG support disabled
 import com.github.sachin.lootin.compat.scheduler.BukkitScheduler;
 import com.github.sachin.lootin.compat.scheduler.PaperScheduler;
 import com.github.sachin.lootin.compat.scheduler.Scheduler;
@@ -43,7 +43,7 @@ public final class Lootin extends JavaPlugin {
     private PaperCommandManager commandManager;
 
     private Scheduler scheduler;
-    public RWGCompat rwgCompat;
+//    public RWGCompat rwgCompat; // RWG support disabled
     public List<Location> currentChestviewers = new ArrayList<>();
     public List<StorageMinecart> currentMinecartviewers = new ArrayList<>();
 
@@ -155,16 +155,16 @@ public final class Lootin extends JavaPlugin {
             getLogger().info("Found OhTheDungeons, registering listeners...");
             pm.registerEvents(new OTDLootListener(), plugin);
         }
-        if(pm.isPluginEnabled("Realistic_World")){
-            getLogger().info("Found RealisticWorldGenerator, trying to register compatibility addon...");
-            this.rwgCompat = new RWGCompat();
-            if (rwgCompat.enableRwgSupport(pm.getPlugin("Realistic_World"))) {
-                rwgCompat.setup();
-                getLogger().info("RealisticWorldGenerator addon successfully registered and installed");
-            } else {
-                getLogger().info("No need to register RealisticWorldGenerator compatibility addon");
-            }
-        }
+//        if(pm.isPluginEnabled("Realistic_World")){
+//            getLogger().info("Found RealisticWorldGenerator, trying to register compatibility addon...");
+//            this.rwgCompat = new RWGCompat();
+//            if (rwgCompat.enableRwgSupport(pm.getPlugin("Realistic_World"))) {
+//                rwgCompat.setup();
+//                getLogger().info("RealisticWorldGenerator addon successfully registered and installed");
+//            } else {
+//                getLogger().info("No need to register RealisticWorldGenerator compatibility addon");
+//            }
+//        }
         if(pm.isPluginEnabled("BetterStructures")){
             this.isRunningBetterStructures = true;
             getLogger().info("Found BetterStructures, registering listeners...");

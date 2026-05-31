@@ -40,7 +40,6 @@ dependencies {
 
     compileOnly 'me.athlaeos:valhallammo-dist:dev-0.4'
     compileOnly 'me.clip:placeholderapi:2.12.2'
-    compileOnly 'net.sourcewriters.spigot.rwg:legacy-api:3.0.0'
     compileOnly 'com.syntaxphoenix.syntaxapi:nbt:2.0.13'
     compileOnly 'com.syntaxphoenix.syntaxapi:random:2.0.12'
     compileOnly 'com.comphenix.protocol:ProtocolLib:4.7.0'
@@ -63,7 +62,6 @@ tasks.named('shadowJar') {
     archiveClassifier.set('')
     relocate 'co.aikar.commands', 'com.github.sachin.lootin.acf'
     relocate 'co.aikar.locales', 'com.github.sachin.lootin.locales'
-    relocate 'com.syntaxphoenix.syntaxapi', 'net.sourcewriters.spigot.rwg.legacy.shaded.synapi'
     relocate 'com.github.sachin.prilib', 'com.github.sachin.lootin.prilib'
 
     exclude 'acf-core_bg.properties'

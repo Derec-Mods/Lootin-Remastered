@@ -2,8 +2,8 @@ package com.github.sachin.lootin.commands;
 
 import com.github.sachin.lootin.Lootin;
 import com.github.sachin.lootin.compat.PaperCompat;
-import com.github.sachin.lootin.compat.rwg.RWGCompat;
-import com.github.sachin.lootin.compat.rwg.util.inventory.RwgInventory;
+// import com.github.sachin.lootin.compat.rwg.RWGCompat; // RWG support disabled
+// import com.github.sachin.lootin.compat.rwg.util.inventory.RwgInventory; // RWG support disabled
 import com.github.sachin.lootin.utils.*;
 
 import com.github.sachin.lootin.utils.storage.LootinContainer;
@@ -238,6 +238,7 @@ public class Commands extends BaseCommand{
     }
 
 
+    /* RWG support disabled
     @Subcommand("rwg loottable")
     public void onRwgLoottableCommand(Player player){
         if(!testRwg(player)) {
@@ -279,5 +280,6 @@ public class Commands extends BaseCommand{
         }
         return true;
     }
+    */
     
 }

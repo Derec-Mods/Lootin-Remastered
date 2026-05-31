@@ -3,7 +3,7 @@ version: ${version}
 main: com.github.sachin.lootin.Lootin
 api-version: 1.21
 authors: [ sachingorkar ]
-softdepend: [ElytraVaults,Terra,CustomStructures,Oh_the_dungeons_youll_go,PlaceholderAPI,ProtocolLib,Realistic_World,BetterStructures,WorldGuard]
+softdepend: [ElytraVaults,Terra,CustomStructures,Oh_the_dungeons_youll_go,PlaceholderAPI,ProtocolLib,BetterStructures,WorldGuard]
 description: Loot per player
 api: []
 folia-supported: true
@@ -22,7 +22,6 @@ permissions:
     default: op
     children:
       lootin.command.reload: true
-      lootin.command.rwggive: true
       lootin.command.set: true
       lootin.command.info: true
       lootin.command.clear: true

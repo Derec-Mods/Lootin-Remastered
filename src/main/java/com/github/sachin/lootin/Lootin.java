@@ -20,6 +20,7 @@ import com.github.sachin.lootin.utils.cooldown.CooldownContainer;
 import com.github.sachin.lootin.utils.storage.LootinContainer;
 import com.github.sachin.lootin.utils.storage.StorageConverterUtility;
 import org.bukkit.*;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -352,12 +353,11 @@ public final class Lootin extends JavaPlugin {
         getLogger().info("Config file reloaded");
     }
 
-    /**
-     * Convenience: reload config and send reload message to a sender (if non-null).
-     */
     public void reloadConfigs(CommandSender sender){
         reloadConfigs();
-        if(sender != null) send(sender, LConstants.RELOADED);
+        if(sender != null) {
+            send(sender, LConstants.RELOADED);
+        }
     }
 
     public void debug(String message){

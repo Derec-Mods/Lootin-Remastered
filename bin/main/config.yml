@@ -17,9 +17,7 @@ metrics: true
 
 messages:
   prefix: "&e[&6Lootin&e] "
-  # Message display mode: ACTIONBAR to use the action bar by default, or CHAT to use normal chat messages
-  # Options: ACTIONBAR | CHAT
-  mode: ACTIONBAR
+  # Message display mode was removed; certain warnings use action bar by design
   no-permission: "&cYou dont have permission to the execute command."
   chestbreak-with-permission: "&aBreaking the chest will delete your unique loot and items! In order to break, &2you must sneak while doing so..&a As loot is &2per player per chest&a, only break if really needed."
   chestbreak-without-permission: "&cYou don't have permission to break loot containers."

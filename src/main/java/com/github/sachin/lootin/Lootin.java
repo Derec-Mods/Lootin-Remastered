@@ -3,7 +3,6 @@ package com.github.sachin.lootin;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
-import java.util.regex.Matcher;
 
 import com.github.sachin.lootin.commands.Commands;
 import com.github.sachin.lootin.compat.*;
@@ -21,6 +20,7 @@ import com.github.sachin.lootin.utils.cooldown.CooldownContainer;
 import com.github.sachin.lootin.utils.storage.LootinContainer;
 import com.github.sachin.lootin.utils.storage.StorageConverterUtility;
 import org.bukkit.*;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -31,7 +31,6 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import co.aikar.commands.PaperCommandManager;
-import me.clip.placeholderapi.PlaceholderAPI;
 
 
 public final class Lootin extends JavaPlugin {
@@ -124,20 +123,13 @@ public final class Lootin extends JavaPlugin {
         commandManager.getCommandCompletions().registerCompletion("loottables",c -> loottables);
         commandManager.registerCommand(new Commands(plugin));
         reloadConfigs();
+
         // register listeners
         PluginManager pm = getServer().getPluginManager();
         if(pm.isPluginEnabled("ElytraVaults")){
             this.isRunningElytraVaults = true;
             getLogger().info("Found ElytraVaults, disabling Elytra item frame handling.");
         }
-//        if(isPost1_20_R2() && plugin.getConfig().getBoolean(LConstants.USE_NEW_LISTENER,true)){
-//            getLogger().info("Registering new listener");
-//            pm.registerEvents(new StructureGenerateListener(),plugin);
-//        }
-//        else{
-//            pm.registerEvents(new ChunkLoadListener(), plugin);
-//        }
-//        pm.registerEvents(new StructureGenerateTempFix(),plugin);
 
         pm.registerEvents(new ChunkLoadListener(), plugin);
         pm.registerEvents(new InventoryListeners(), plugin);
@@ -169,10 +161,7 @@ public final class Lootin extends JavaPlugin {
             getLogger().info("Found BetterStructures, registering listeners...");
             pm.registerEvents(new BetterStructuresListener(),plugin);
         }
-//        if(pm.isPluginEnabled("ValhallaMMO")){
-//            this.isRunningValhallaMMO = true;
-//            pm.registerEvents(new ValhallaMMOListner(),plugin);
-//        }
+
         if(isRunningProtocolLib){
             try{
                 getLogger().info("Found ProtocolLib, trying to register meta data packet listener...");
@@ -232,7 +221,7 @@ public final class Lootin extends JavaPlugin {
     }
 
 
-    
+
     public static Lootin getPlugin() {
         return plugin;
     }
@@ -241,24 +230,20 @@ public final class Lootin extends JavaPlugin {
         return new NamespacedKey(plugin, key);
     }
 
-    public String getMessage(String key,Player player){
-        String message = ChatColor.translateAlternateColorCodes('&', getConfig().getString("messages.prefix")+getConfig().getString(key,key));
-        if(getServer().getPluginManager().isPluginEnabled("PlaceholderAPI") && player != null){
-            return PlaceholderAPI.setPlaceholders(player, message);
-        }
-        return message;
+    public void sendPlayerMessage(String message, Player player) {
+        MessageUtils.sendPlayerMessage(message, player);
     }
 
-    public void sendPlayerMessage(String message,Player player){
-        player.sendMessage(getMessage(message,player));
+    public void sendMessageTo(Player player, String message, boolean forceChat) {
+        MessageUtils.sendMessageTo(player, message, forceChat);
     }
 
-    public String getPrefix(){
-        return ChatColor.translateAlternateColorCodes('&', getConfig().getString("messages.prefix"));
+    public void send(CommandSender sender, String key) {
+        MessageUtils.send(sender, key);
     }
 
-    public String getTitle(String key){
-        return ChatColor.translateAlternateColorCodes('&', getConfig().getString(key,"Error"));
+    public void send(CommandSender sender, String key, boolean forceChat) {
+        MessageUtils.send(sender, key, forceChat);
     }
 
     public List<String> getBlackListWorlds(){
@@ -351,6 +336,13 @@ public final class Lootin extends JavaPlugin {
         getLogger().info("Config file reloaded");
     }
 
+    public void reloadConfigs(CommandSender sender){
+        reloadConfigs();
+        if(sender != null) {
+            send(sender, LConstants.RELOADED);
+        }
+    }
+
     public void debug(String message){
         if(getConfig().getBoolean(LConstants.DEBUG_MODE) && message != null){
             getServer().getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&',message));
@@ -358,14 +350,14 @@ public final class Lootin extends JavaPlugin {
     }
 
     public boolean isPost1_19(){
-        return ServerVersion.current().isAtLeast(1,19);
+        return ServerVersionUtils.current().isAtLeast(1,19);
     }
 
     public boolean isPost1_20_R2(){
-        return ServerVersion.current().isAtLeast(1,20,2);
+        return ServerVersionUtils.current().isAtLeast(1,20,2);
     }
 
-    public boolean is1_16(){ return ServerVersion.current().equals(1,16,5);}
+    public boolean is1_16(){ return ServerVersionUtils.current().equals(1,16,5);}
 
     public PaperCommandManager getCommandManager() {
         return commandManager;

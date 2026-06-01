@@ -433,14 +433,14 @@ public class ChestUtils{
         cooldown.trigger();
         if(containerType==ContainerType.MINECART){
             if(plugin.currentMinecartviewers.contains((StorageMinecart) lootable)){
-                plugin.sendPlayerMessage(LConstants.CHEST_EDITED,player);
+                MessageUtils.sendActionBarStatic(player, MessageUtils.getMessageStatic(LConstants.CHEST_EDITED, player));
                 return true;
             }
             new LootinGui(player,containerType,lootable,overrideItems).open();
             return true;
         }
         if(plugin.currentChestviewers.contains(location)) {
-            plugin.sendPlayerMessage(LConstants.CHEST_EDITED,player);
+            MessageUtils.sendActionBarStatic(player, MessageUtils.getMessageStatic(LConstants.CHEST_EDITED, player));
             return true;
         }
         new LootinGui(player,containerType,lootable,overrideItems).open();

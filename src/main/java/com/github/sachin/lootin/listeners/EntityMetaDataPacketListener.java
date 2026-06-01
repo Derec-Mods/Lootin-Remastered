@@ -5,19 +5,9 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
-import com.comphenix.protocol.wrappers.WrappedWatchableObject;
 import com.github.sachin.lootin.Lootin;
-import com.github.sachin.lootin.utils.LConstants;
-import com.github.sachin.lootin.utils.ServerVersion;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.persistence.PersistentDataType;
-
-import java.util.List;
 
 public class EntityMetaDataPacketListener extends PacketAdapter {
 
@@ -55,8 +45,5 @@ public class EntityMetaDataPacketListener extends PacketAdapter {
         // specific players. This is commented out for now and will be
         // reimplemented later using ProtocolLib or a maintained NMS adapter.
         // idk lmaooo it's 4:39 in the morning and i just want to get this working again for derex smp
-
     }
-
-
 }

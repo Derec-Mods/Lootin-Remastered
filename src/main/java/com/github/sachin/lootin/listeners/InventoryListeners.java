@@ -32,13 +32,13 @@ public class InventoryListeners extends BaseListener {
             return;
         }
 
-        if (state instanceof Lootable lootable && ChestUtils.getContainerType((Lootable) state) != null) {
+        if (state instanceof Lootable lootable && ChestUtils.getContainerType(lootable) != null) {
             ContainerType containerType = ChestUtils.getContainerType(lootable);
 //            if(plugin.isRunningValhallaMMO && ValhallaMMOListner.firstTimerChests.contains(state.getLocation())){
 //                ValhallaMMOListner.firstTimerChests.remove(state.getLocation());
 //                return;
 //            }
-            boolean denyInteraction = ChestUtils.openLootinInventory((Lootable) state, player, state.getLocation(), null);
+            boolean denyInteraction = ChestUtils.openLootinInventory(lootable, player, state.getLocation(), null);
             if (denyInteraction) {
                 e.setUseInteractedBlock(PlayerInteractEvent.Result.DENY);
             }

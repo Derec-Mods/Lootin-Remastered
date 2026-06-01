@@ -7,14 +7,27 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class MessageUtils {
+    private static Lootin plugin() { return Lootin.getPlugin(); }
 
-    private final Lootin plugin;
-
-    public MessageUtils(Lootin plugin) {
-        this.plugin = plugin;
+    /* Backwards-compatible static wrappers (aliases) */
+    public static String getMessageStatic(String key, Player player){
+        return getMessage(key, player);
     }
 
-    public String getMessage(String key, Player player) {
+    public static void sendActionBarStatic(Player player, String message){
+        sendActionBar(player, message);
+    }
+
+    public static void sendStatic(CommandSender sender, String key){
+        send(sender, key);
+    }
+
+    public static void sendStatic(CommandSender sender, String key, boolean force){
+        send(sender, key, force);
+    }
+
+    public static String getMessage(String key, Player player) {
+        Lootin plugin = plugin();
         String message = ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("messages.prefix") + plugin.getConfig().getString(key, key));
         if (plugin.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI") && player != null) {
             return PlaceholderAPI.setPlaceholders(player, message);
@@ -22,11 +35,11 @@ public class MessageUtils {
         return message;
     }
 
-    public void sendPlayerMessage(String message, Player player) {
+    public static void sendPlayerMessage(String message, Player player) {
         sendMessageTo(player, getMessage(message, player), false);
     }
 
-    public void sendMessageTo(Player player, String message, boolean forceChat) {
+    public static void sendMessageTo(Player player, String message, boolean forceChat) {
         if (player == null || message == null) {
             return;
         }
@@ -38,23 +51,23 @@ public class MessageUtils {
         player.sendMessage(message);
     }
 
-    public String getPrefix() {
-        return ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("messages.prefix"));
+    public static String getPrefix() {
+        return ChatColor.translateAlternateColorCodes('&', plugin().getConfig().getString("messages.prefix"));
     }
 
-    public String getTitle(String key) {
-        return ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString(key, "Error"));
+    public static String getTitle(String key) {
+        return ChatColor.translateAlternateColorCodes('&', plugin().getConfig().getString(key, "Error"));
     }
 
     /**
      * Send a configured message (by key or raw text) to any CommandSender.
      * If the sender is a Player, respects message mode and `forceChat`.
      */
-    public void send(CommandSender sender, String key){
+    public static void send(CommandSender sender, String key){
         send(sender, key, false);
     }
 
-    public void send(CommandSender sender, String key, boolean forceChat){
+    public static void send(CommandSender sender, String key, boolean forceChat){
         if(sender == null || key == null) return;
         Player player = sender instanceof Player ? (Player) sender : null;
         String message = getMessage(key, player);
@@ -68,7 +81,7 @@ public class MessageUtils {
     /**
      * Send an action bar message to a player. Falls back to chat if action bar is not available.
      */
-    public void sendActionBar(Player player, String message){
+    public static void sendActionBar(Player player, String message){
         if(player == null || message == null) return;
         try{
             player.sendActionBar(message);

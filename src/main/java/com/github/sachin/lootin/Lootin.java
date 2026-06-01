@@ -66,7 +66,6 @@ public final class Lootin extends JavaPlugin {
     public boolean isRunningWG;
 
     private WGFlag WGflag;
-    private MessageUtils messageUtils;
 
     @Override
     public void onLoad() {
@@ -124,8 +123,7 @@ public final class Lootin extends JavaPlugin {
         commandManager.getCommandCompletions().registerCompletion("loottables",c -> loottables);
         commandManager.registerCommand(new Commands(plugin));
         reloadConfigs();
-        // initialize message utils
-        this.messageUtils = new MessageUtils(this);
+        // MessageUtils is a static utility now; no initialization required
         // register listeners
         PluginManager pm = getServer().getPluginManager();
         if(pm.isPluginEnabled("ElytraVaults")){
@@ -244,23 +242,19 @@ public final class Lootin extends JavaPlugin {
     }
 
     public void sendPlayerMessage(String message, Player player) {
-        messageUtils.sendPlayerMessage(message, player);
+        MessageUtils.sendPlayerMessage(message, player);
     }
 
     public void sendMessageTo(Player player, String message, boolean forceChat) {
-        messageUtils.sendMessageTo(player, message, forceChat);
-    }
-
-    public MessageUtils getMessageUtils() {
-        return messageUtils;
+        MessageUtils.sendMessageTo(player, message, forceChat);
     }
 
     public void send(CommandSender sender, String key) {
-        messageUtils.send(sender, key);
+        MessageUtils.send(sender, key);
     }
 
     public void send(CommandSender sender, String key, boolean forceChat) {
-        messageUtils.send(sender, key, forceChat);
+        MessageUtils.send(sender, key, forceChat);
     }
 
     public List<String> getBlackListWorlds(){

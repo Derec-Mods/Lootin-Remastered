@@ -8,6 +8,7 @@ import com.github.sachin.lootin.utils.ChestUtils;
 import com.github.sachin.lootin.utils.ContainerType;
 import com.github.sachin.lootin.utils.LConstants;
 
+import com.github.sachin.lootin.utils.MessageUtils;
 import io.papermc.paper.threadedregions.scheduler.RegionScheduler;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -52,19 +53,19 @@ public class ChestEvents extends BaseListener{
 
 
         if (plugin.currentChestviewers.contains(state.getLocation())) {
-            plugin.getMessageUtils().sendActionBar(player, plugin.getMessageUtils().getMessage(LConstants.CHEST_EDITED, player));
+            MessageUtils.sendActionBarStatic(player, MessageUtils.getMessageStatic(LConstants.CHEST_EDITED, player));
             e.setCancelled(true);
             return;
         }
 
         if (!player.hasPermission("lootin.breakchest.bypass")) {
             e.setCancelled(true);
-            plugin.getMessageUtils().sendActionBar(player, plugin.getMessageUtils().getMessage(LConstants.BLOCK_BREAK_WITHOUTP, player));
+            MessageUtils.sendActionBarStatic(player, MessageUtils.getMessageStatic(LConstants.BLOCK_BREAK_WITHOUTP, player));
             return;
         }
 
         if (!player.isSneaking()) {
-            plugin.sendMessageTo(player, plugin.getMessageUtils().getMessage(LConstants.BLOCK_BREAK_WITHP, player), false);
+            plugin.sendMessageTo(player, MessageUtils.getMessageStatic(LConstants.BLOCK_BREAK_WITHP, player), false);
             e.setCancelled(true);
             return;
         }
@@ -94,13 +95,13 @@ public class ChestEvents extends BaseListener{
             Player player = (Player) e.getAttacker();
                 if (!player.hasPermission("lootin.breakchest.bypass")) {
                 e.setCancelled(true);
-                plugin.getMessageUtils().sendActionBar(player, plugin.getMessageUtils().getMessage(LConstants.BLOCK_BREAK_WITHOUTP, player));
+                MessageUtils.sendActionBarStatic(player, MessageUtils.getMessageStatic(LConstants.BLOCK_BREAK_WITHOUTP, player));
                 return;
             }
 
             if (!player.isSneaking()) {
                 e.setCancelled(true);
-                plugin.sendMessageTo(player, plugin.getMessageUtils().getMessage(LConstants.BLOCK_BREAK_WITHP, player), false);
+                plugin.sendMessageTo(player, MessageUtils.getMessageStatic(LConstants.BLOCK_BREAK_WITHP, player), false);
                 return;
             }
 
@@ -239,7 +240,7 @@ public class ChestEvents extends BaseListener{
                         b.setType(Material.AIR);
                         item.setAmount(1);
                         player.getWorld().dropItemNaturally(b.getLocation().add(0.5,0.5,0.5), item);
-                        plugin.getMessageUtils().sendActionBar(player, plugin.getMessageUtils().getMessage(LConstants.CANT_PLACE_DCHEST, player));
+                        MessageUtils.sendActionBarStatic(player, MessageUtils.getMessageStatic(LConstants.CANT_PLACE_DCHEST, player));
                         break;
                     }
                 }

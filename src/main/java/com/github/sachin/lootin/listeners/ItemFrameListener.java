@@ -2,6 +2,7 @@ package com.github.sachin.lootin.listeners;
 
 import com.github.sachin.lootin.Lootin;
 import com.github.sachin.lootin.utils.LConstants;
+import com.github.sachin.lootin.utils.MessageUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -50,12 +51,12 @@ public class ItemFrameListener extends BaseListener {
                     if (player.hasPermission("lootin.breakelytraitemframe.bypass")) {
                             if (player.getInventory().getItemInMainHand().getType() == Material.STICK) {
                             framea.remove();
-                            plugin.sendMessageTo(player, plugin.getMessageUtils().getMessage(LConstants.ELYTRA_IF_REMOVED, player), false);
+                            plugin.sendMessageTo(player, MessageUtils.getMessageStatic(LConstants.ELYTRA_IF_REMOVED, player), false);
                         } else {
-                            plugin.sendMessageTo(player, plugin.getMessageUtils().getMessage(LConstants.ELYTRA_IF_BREAK_WITHPERM, player), false);
+                            plugin.sendMessageTo(player, MessageUtils.getMessageStatic(LConstants.ELYTRA_IF_BREAK_WITHPERM, player), false);
                         }
                     } else {
-                        plugin.sendMessageTo(player, plugin.getMessageUtils().getMessage(LConstants.ELYTRA_IF_BREAK_WITHOUTPERM, player), true);
+                        plugin.sendMessageTo(player, MessageUtils.getMessageStatic(LConstants.ELYTRA_IF_BREAK_WITHOUTPERM, player), true);
                     }
                     return;
                 }

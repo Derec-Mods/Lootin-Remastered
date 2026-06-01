@@ -1,0 +1,28 @@
+name: Lootin
+version: ${version}
+main: com.github.sachin.lootin.Lootin
+api-version: 1.21
+authors: [ sachingorkar, DerexXD ]
+softdepend: [ElytraVaults,Terra,Oh_the_dungeons_youll_go,PlaceholderAPI,ProtocolLib,BetterStructures,WorldGuard]
+description: Loot per player
+api: []
+folia-supported: true
+
+
+permissions:
+  lootin.breakchest.bypass:
+    default: op
+  lootin.breakelytraitemframe.bypass:
+    default: op
+  lootin.preventfilling.bypass:
+    default: op
+  lootin.autoreplenish:
+    default: true
+  lootin.command.*:
+    default: op
+    children:
+      lootin.command.reload: true
+      lootin.command.set: true
+      lootin.command.info: true
+      lootin.command.clear: true
+      lootin.command.test: true

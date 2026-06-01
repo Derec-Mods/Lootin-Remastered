@@ -232,7 +232,7 @@ public final class Lootin extends JavaPlugin {
     }
 
 
-    
+
     public static Lootin getPlugin() {
         return plugin;
     }
@@ -250,7 +250,34 @@ public final class Lootin extends JavaPlugin {
     }
 
     public void sendPlayerMessage(String message,Player player){
-        player.sendMessage(getMessage(message,player));
+        // Delegate to sendMessageTo so behavior respects configured message mode
+        sendMessageTo(player, getMessage(message, player), false);
+    }
+
+    public MessageMode getMessageMode(){
+        String val = getConfig().getString("messages.mode", "ACTIONBAR");
+        try{
+            return MessageMode.valueOf(val.toUpperCase());
+        }catch (Exception e){
+            return MessageMode.ACTIONBAR;
+        }
+    }
+
+    public void sendMessageTo(Player player, String message, boolean forceChat){
+        if(player == null || message == null) return;
+        if(forceChat){
+            player.sendMessage(message);
+            return;
+        }
+        if(getMessageMode() == MessageMode.ACTIONBAR){
+            try{
+                player.sendActionBar(message);
+                return;
+            }catch (NoClassDefFoundError | NoSuchMethodError ignored){
+                // fallthrough to chat fallback
+            }
+        }
+        player.sendMessage(message);
     }
 
     public String getPrefix(){

@@ -9,7 +9,6 @@ import org.bukkit.entity.Player;
 public class MessageUtils {
     private static Lootin plugin() { return Lootin.getPlugin(); }
 
-    /* Backwards-compatible static wrappers (aliases) */
     public static String getMessageStatic(String key, Player player){
         return getMessage(key, player);
     }
@@ -43,11 +42,7 @@ public class MessageUtils {
         if (player == null || message == null) {
             return;
         }
-        if (forceChat) {
-            player.sendMessage(message);
-            return;
-        }
-        // Default behaviour for sendMessageTo is to send chat messages.
+
         player.sendMessage(message);
     }
 
@@ -59,10 +54,6 @@ public class MessageUtils {
         return ChatColor.translateAlternateColorCodes('&', plugin().getConfig().getString(key, "Error"));
     }
 
-    /**
-     * Send a configured message (by key or raw text) to any CommandSender.
-     * If the sender is a Player, respects message mode and `forceChat`.
-     */
     public static void send(CommandSender sender, String key){
         send(sender, key, false);
     }

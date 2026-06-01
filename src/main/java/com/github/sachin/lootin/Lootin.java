@@ -123,21 +123,13 @@ public final class Lootin extends JavaPlugin {
         commandManager.getCommandCompletions().registerCompletion("loottables",c -> loottables);
         commandManager.registerCommand(new Commands(plugin));
         reloadConfigs();
-        // MessageUtils is a static utility now; no initialization required
+
         // register listeners
         PluginManager pm = getServer().getPluginManager();
         if(pm.isPluginEnabled("ElytraVaults")){
             this.isRunningElytraVaults = true;
             getLogger().info("Found ElytraVaults, disabling Elytra item frame handling.");
         }
-//        if(isPost1_20_R2() && plugin.getConfig().getBoolean(LConstants.USE_NEW_LISTENER,true)){
-//            getLogger().info("Registering new listener");
-//            pm.registerEvents(new StructureGenerateListener(),plugin);
-//        }
-//        else{
-//            pm.registerEvents(new ChunkLoadListener(), plugin);
-//        }
-//        pm.registerEvents(new StructureGenerateTempFix(),plugin);
 
         pm.registerEvents(new ChunkLoadListener(), plugin);
         pm.registerEvents(new InventoryListeners(), plugin);
@@ -169,10 +161,7 @@ public final class Lootin extends JavaPlugin {
             getLogger().info("Found BetterStructures, registering listeners...");
             pm.registerEvents(new BetterStructuresListener(),plugin);
         }
-//        if(pm.isPluginEnabled("ValhallaMMO")){
-//            this.isRunningValhallaMMO = true;
-//            pm.registerEvents(new ValhallaMMOListner(),plugin);
-//        }
+
         if(isRunningProtocolLib){
             try{
                 getLogger().info("Found ProtocolLib, trying to register meta data packet listener...");

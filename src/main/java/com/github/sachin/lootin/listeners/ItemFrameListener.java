@@ -48,14 +48,14 @@ public class ItemFrameListener extends BaseListener {
                 NamespacedKey playerKey = Lootin.getKey(uuid);
                 if (framea.getPersistentDataContainer().has(playerKey, PersistentDataType.INTEGER)) {
                     if (player.hasPermission("lootin.breakelytraitemframe.bypass")) {
-                        if (player.getInventory().getItemInMainHand().getType() == Material.STICK) {
+                            if (player.getInventory().getItemInMainHand().getType() == Material.STICK) {
                             framea.remove();
-                            player.sendMessage(plugin.getMessage(LConstants.ELYTRA_IF_REMOVED, player));
+                            plugin.sendMessageTo(player, plugin.getMessageUtils().getMessage(LConstants.ELYTRA_IF_REMOVED, player), false);
                         } else {
-                            player.sendMessage(plugin.getMessage(LConstants.ELYTRA_IF_BREAK_WITHPERM, player));
+                            plugin.sendMessageTo(player, plugin.getMessageUtils().getMessage(LConstants.ELYTRA_IF_BREAK_WITHPERM, player), false);
                         }
                     } else {
-                        player.sendMessage(plugin.getMessage(LConstants.ELYTRA_IF_BREAK_WITHOUTPERM, player));
+                        plugin.sendMessageTo(player, plugin.getMessageUtils().getMessage(LConstants.ELYTRA_IF_BREAK_WITHOUTPERM, player), true);
                     }
                     return;
                 }

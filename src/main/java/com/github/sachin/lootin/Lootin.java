@@ -3,7 +3,6 @@ package com.github.sachin.lootin;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
-import java.util.regex.Matcher;
 
 import com.github.sachin.lootin.commands.Commands;
 import com.github.sachin.lootin.compat.*;
@@ -31,7 +30,6 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import co.aikar.commands.PaperCommandManager;
-import me.clip.placeholderapi.PlaceholderAPI;
 
 
 public final class Lootin extends JavaPlugin {
@@ -67,6 +65,7 @@ public final class Lootin extends JavaPlugin {
     public boolean isRunningWG;
 
     private WGFlag WGflag;
+    private MessageUtils messageUtils;
 
     @Override
     public void onLoad() {
@@ -124,6 +123,8 @@ public final class Lootin extends JavaPlugin {
         commandManager.getCommandCompletions().registerCompletion("loottables",c -> loottables);
         commandManager.registerCommand(new Commands(plugin));
         reloadConfigs();
+        // initialize message utils
+        this.messageUtils = new MessageUtils(this);
         // register listeners
         PluginManager pm = getServer().getPluginManager();
         if(pm.isPluginEnabled("ElytraVaults")){
@@ -241,51 +242,24 @@ public final class Lootin extends JavaPlugin {
         return new NamespacedKey(plugin, key);
     }
 
-    public String getMessage(String key,Player player){
-        String message = ChatColor.translateAlternateColorCodes('&', getConfig().getString("messages.prefix")+getConfig().getString(key,key));
-        if(getServer().getPluginManager().isPluginEnabled("PlaceholderAPI") && player != null){
-            return PlaceholderAPI.setPlaceholders(player, message);
-        }
-        return message;
+    public void sendPlayerMessage(String message, Player player) {
+        messageUtils.sendPlayerMessage(message, player);
     }
 
-    public void sendPlayerMessage(String message,Player player){
-        // Delegate to sendMessageTo so behavior respects configured message mode
-        sendMessageTo(player, getMessage(message, player), false);
+    public void sendMessageTo(Player player, String message, boolean forceChat) {
+        messageUtils.sendMessageTo(player, message, forceChat);
     }
 
-    public MessageMode getMessageMode(){
-        String val = getConfig().getString("messages.mode", "ACTIONBAR");
-        try{
-            return MessageMode.valueOf(val.toUpperCase());
-        }catch (Exception e){
-            return MessageMode.ACTIONBAR;
-        }
+    public MessageUtils getMessageUtils() {
+        return messageUtils;
     }
 
-    public void sendMessageTo(Player player, String message, boolean forceChat){
-        if(player == null || message == null) return;
-        if(forceChat){
-            player.sendMessage(message);
-            return;
-        }
-        if(getMessageMode() == MessageMode.ACTIONBAR){
-            try{
-                player.sendActionBar(message);
-                return;
-            }catch (NoClassDefFoundError | NoSuchMethodError ignored){
-                // fallthrough to chat fallback
-            }
-        }
-        player.sendMessage(message);
+    public void send(CommandSender sender, String key) {
+        messageUtils.send(sender, key);
     }
 
-    public String getPrefix(){
-        return ChatColor.translateAlternateColorCodes('&', getConfig().getString("messages.prefix"));
-    }
-
-    public String getTitle(String key){
-        return ChatColor.translateAlternateColorCodes('&', getConfig().getString(key,"Error"));
+    public void send(CommandSender sender, String key, boolean forceChat) {
+        messageUtils.send(sender, key, forceChat);
     }
 
     public List<String> getBlackListWorlds(){
@@ -376,6 +350,14 @@ public final class Lootin extends JavaPlugin {
         reloadConfig();
         getWorldManager().saveAndReloadWorldConfigFile();
         getLogger().info("Config file reloaded");
+    }
+
+    /**
+     * Convenience: reload config and send reload message to a sender (if non-null).
+     */
+    public void reloadConfigs(CommandSender sender){
+        reloadConfigs();
+        if(sender != null) send(sender, LConstants.RELOADED);
     }
 
     public void debug(String message){

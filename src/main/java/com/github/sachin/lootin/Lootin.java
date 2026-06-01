@@ -361,14 +361,14 @@ public final class Lootin extends JavaPlugin {
     }
 
     public boolean isPost1_19(){
-        return ServerVersion.current().isAtLeast(1,19);
+        return ServerVersionUtils.current().isAtLeast(1,19);
     }
 
     public boolean isPost1_20_R2(){
-        return ServerVersion.current().isAtLeast(1,20,2);
+        return ServerVersionUtils.current().isAtLeast(1,20,2);
     }
 
-    public boolean is1_16(){ return ServerVersion.current().equals(1,16,5);}
+    public boolean is1_16(){ return ServerVersionUtils.current().equals(1,16,5);}
 
     public PaperCommandManager getCommandManager() {
         return commandManager;

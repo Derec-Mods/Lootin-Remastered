@@ -4,6 +4,7 @@
 build/
 *.jar
 !lib/**/*.jar
+/bin
 
 # User-specific stuff
 .idea/

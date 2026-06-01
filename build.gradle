@@ -4,7 +4,7 @@ plugins {
 }
 
 group = 'com.github.sachin.lootin'
-version = '13.6'
+version = '13.6.0'
 description = 'Loot per player'
 
 java {

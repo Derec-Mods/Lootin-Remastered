@@ -168,12 +168,12 @@ public final class Lootin extends JavaPlugin {
                 new EntityMetaDataPacketListener();
             }catch (NoClassDefFoundError ignore) {
                 isRunningProtocolLib = false;
-                getLogger().severe("Error registering meta data packet listner from protocollib");
+                getLogger().severe("Error registering meta data packet listener from protocollib");
             }
         }
         if(getConfig().getBoolean("metrics",true)){
             getLogger().info("Enabling bstats...");
-            new Metrics(this, 11877);
+            new Metrics(this, 31790);
         }
 
         cachedRunnable = scheduler.runTaskTimer(this,() -> {

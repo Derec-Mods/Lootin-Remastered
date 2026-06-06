@@ -198,6 +198,13 @@ public final class Lootin extends JavaPlugin {
                 }
             }
         },1,10*20);
+
+        Bukkit.getLogger().info("");
+        Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "  |_______|                             " +
+                "  ");
+        Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "  | Derex |     Lootin Remastered v" + getDescription().getVersion());
+        Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "  |_______|     Running on " + Bukkit.getName() + " - " + Bukkit.getVersion());
+        Bukkit.getLogger().info("");
     }
 
 

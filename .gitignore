@@ -5,6 +5,7 @@ build/
 *.jar
 !lib/**/*.jar
 /bin
+/temporary
 
 # User-specific stuff
 .idea/

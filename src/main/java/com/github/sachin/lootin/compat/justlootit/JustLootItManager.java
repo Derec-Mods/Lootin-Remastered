@@ -1,0 +1,1 @@
+// justlootit PDC only stores a single bookmark, all real loot data lives in custom files under justlootit/ directory

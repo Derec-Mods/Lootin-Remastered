@@ -1,3 +1,8 @@
+
+> If this project helped you, please consider leaving some stars [on the Github](https://github.com/Derec-Mods)! 
+
+[![Support me on Ko-fi](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/compact/donate/kofi-singular-alt_vector.svg)](https://ko-fi.com/derexxd) 
+
 # Lootin Remastered
 
 ![Replace this with a description](https://cdn.modrinth.com/data/cached_images/a777d78fa432f6fd5d28750e04aba6e70e86b525_0.webp)

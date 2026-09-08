@@ -9,6 +9,7 @@ build/
 
 # User-specific stuff
 .idea/
+.java-home
 
 *.iml
 *.ipr

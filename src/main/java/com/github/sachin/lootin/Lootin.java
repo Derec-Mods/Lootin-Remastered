@@ -134,6 +134,7 @@ public final class Lootin extends JavaPlugin {
         pm.registerEvents(new ChunkLoadListener(), plugin);
         pm.registerEvents(new InventoryListeners(), plugin);
         pm.registerEvents(new ChestEvents(), plugin);
+        pm.registerEvents(new SurvivalPlacedListener(), plugin);
         pm.registerEvents(new ItemFrameListener(),plugin);
         pm.registerEvents(new LootGenerateListener(),plugin);
 //        if(pm.isPluginEnabled("CustomStructures")){

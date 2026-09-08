@@ -417,6 +417,7 @@ public class ChestUtils{
         Lootin plugin = Lootin.getPlugin();
         if(plugin.isRunningWG && !plugin.getWGflag().queryFlag(player,location)) return false;
         if(plugin.isBlackListWorld(player.getWorld())) return false;
+        if(isSurvivalPlaced(lootable)) return false;
         ContainerType containerType = ChestUtils.getContainerType(lootable);
         if(containerType==null) return false;
         LootTable lootTable = lootable.getLootTable();
@@ -481,6 +482,26 @@ public class ChestUtils{
 
     private static boolean hasKey(PersistentDataContainer data){
         return data.has(LConstants.IDENTITY_KEY, PersistentDataType.STRING);
+    }
+
+    private static boolean hasSurvivalPlacedKey(PersistentDataContainer data){
+        return data.has(LConstants.SURVIVAL_PLACED_KEY, PersistentDataType.BYTE);
+    }
+
+    public static boolean isSurvivalPlaced(Lootable lootable){
+        if(!(lootable instanceof PersistentDataHolder holder)){
+            return false;
+        }
+        if(hasSurvivalPlacedKey(holder.getPersistentDataContainer())){
+            return true;
+        }
+        if(lootable instanceof BlockState block && isDoubleChest(block)){
+            DoubleChest doubleChest = getDoubleChest(block);
+            PersistentDataContainer left = ((Chest) doubleChest.getLeftSide()).getPersistentDataContainer();
+            PersistentDataContainer right = ((Chest) doubleChest.getRightSide()).getPersistentDataContainer();
+            return hasSurvivalPlacedKey(left) || hasSurvivalPlacedKey(right);
+        }
+        return false;
     }
 
     public static boolean isChest(Material mat){

@@ -4,6 +4,8 @@ import com.github.sachin.lootin.Lootin;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.Chest;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -13,11 +15,12 @@ import org.bukkit.loot.LootContext;
 import org.bukkit.loot.LootTable;
 import org.bukkit.loot.Lootable;
 
+import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Random;
 
 /**
- * Utility to fill inventories from Bukkit/Paper loot tables without NMS.
+ * Utility to fill inventories from loot tables. 
  */
 public final class LootTableFiller {
 
@@ -50,10 +53,12 @@ public final class LootTableFiller {
             if (lootTable == null) return;
 
             if (!(container instanceof InventoryHolder)) return;
-            Inventory inv = ((InventoryHolder) container).getInventory();
+            Inventory inv = container instanceof Chest
+                    ? ((Chest) container).getBlockInventory()
+                    : ((InventoryHolder) container).getInventory();
 
             Location loc = null;
-            if (container instanceof org.bukkit.block.BlockState) loc = ((org.bukkit.block.BlockState) container).getLocation();
+            if (container instanceof BlockState) loc = ((BlockState) container).getLocation();
             else if (container instanceof Entity) loc = ((Entity) container).getLocation();
 
             long seed = System.nanoTime();
@@ -63,9 +68,17 @@ public final class LootTableFiller {
             }
             Random random = new Random(seed);
 
+            if (tryFillLikeVanilla(player, container, lootTable, inv, seed, lootTableKey)) {
+                return;
+            }
+
             LootContext.Builder builder;
             if (loc != null) builder = new LootContext.Builder(loc);
             else builder = new LootContext.Builder(player.getLocation());
+            if (player != null) {
+                builder.killer(player);
+                builder.lootedEntity(player);
+            }
 
             LootContext context = builder.build();
 
@@ -82,7 +95,94 @@ public final class LootTableFiller {
             if (items != null && !items.isEmpty()) inv.addItem(items.toArray(new ItemStack[0]));
 
         } catch (Throwable t) {
-            plugin.getLogger().warning("LootTableFiller failed to fill loot: " + t.getMessage());
+            plugin.getLogger().warning("LootTableFiller failed to fill loot for '" + lootTableKey + "': " + t.getMessage());
         }
+    }
+
+    private static boolean tryFillLikeVanilla(Player player, Lootable container, LootTable lootTable, Inventory inv, long seed, String lootTableKey) {
+        try {
+            try {
+                container.setLootTable(lootTable, seed);
+            } catch (NoSuchMethodError ignored) {
+                container.setLootTable(lootTable);
+                container.setSeed(seed);
+            }
+            if (container instanceof BlockState) ((BlockState) container).update();
+
+            Object nmsPlayer = invokeNoArg(player, "getHandle");
+            Object nmsContainer = container instanceof BlockState
+                    ? invokeNoArg(container, "getBlockEntity", "getTileEntity")
+                    : invokeNoArg(container, "getHandle");
+            if (nmsContainer == null) nmsContainer = invokeNoArg(inv, "getInventory", "getHandle");
+
+            Method unpack = null;
+            if (nmsContainer != null) {
+                for (Method method : nmsContainer.getClass().getMethods()) {
+                    if (!"unpackLootTable".equals(method.getName())) continue;
+                    Class<?>[] params = method.getParameterTypes();
+                    if (params.length == 2 && params[1] == boolean.class) {
+                        unpack = method;
+                        break;
+                    }
+                    if (params.length == 1) unpack = method;
+                }
+            }
+            if (unpack == null) {
+                plugin.getLogger().info("LootTableFiller vanilla unpack for '" + lootTableKey + "': unpackLootTable not found, falling back");
+                container.setLootTable(null);
+                if (container instanceof BlockState) ((BlockState) container).update();
+                return false;
+            }
+            if (unpack.getParameterCount() == 2) unpack.invoke(nmsContainer, nmsPlayer, true);
+            else unpack.invoke(nmsContainer, nmsPlayer);
+
+            int filled = 0;
+            if (inv != null) {
+                for (ItemStack item : inv.getContents()) {
+                    if (item != null && !item.getType().isAir()) filled++;
+                }
+            }
+            if (filled == 0) {
+                plugin.getLogger().info("LootTableFiller vanilla unpack for '" + lootTableKey + "': ran " + unpack.getParameterCount() + "-arg unpack on " + nmsContainer.getClass().getSimpleName() + " but inventory was empty, falling back");
+                container.setLootTable(null);
+                if (container instanceof BlockState) ((BlockState) container).update();
+                return false;
+            }
+
+            plugin.getLogger().info("LootTableFiller vanilla unpack for '" + lootTableKey + "': filled " + filled + " stacks via " + unpack.getParameterCount() + "-arg unpack on " + nmsContainer.getClass().getSimpleName());
+            if (container instanceof BlockState) container.setLootTable(null);
+            return true;
+        } catch (Throwable t) {
+            plugin.getLogger().info("LootTableFiller vanilla unpack for '" + lootTableKey + "': failed (" + t.getClass().getSimpleName() + ": " + t.getMessage() + "), falling back");
+            try {
+                container.setLootTable(null);
+                if (container instanceof BlockState) ((BlockState) container).update();
+            } catch (Throwable ignored2) {
+            }
+            return false;
+        }
+    }
+
+    private static Object invokeNoArg(Object target, String... names) {
+        if (target == null) return null;
+        for (String name : names) {
+            try {
+                Method method = target.getClass().getMethod(name);
+                method.setAccessible(true);
+                return method.invoke(target);
+            } catch (ReflectiveOperationException ignored) {
+            }
+        }
+        for (Class<?> type = target.getClass(); type != null; type = type.getSuperclass()) {
+            for (String name : names) {
+                try {
+                    Method method = type.getDeclaredMethod(name);
+                    method.setAccessible(true);
+                    return method.invoke(target);
+                } catch (ReflectiveOperationException ignored) {
+                }
+            }
+        }
+        return null;
     }
 }

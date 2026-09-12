@@ -24,11 +24,12 @@ When a player opens a naturally generated chest, barrel, or minecart, they recei
 * **Per-Player Elytras:** Elytra frames inside End City ships generate uniquely per player. Has added compatibility for the [Elytra Vaults plugin](https://modrinth.com/datapack/elytra-vaults-atlasplays), letting that handle elytras logic instead. NOTE - Per player elytras are buggy on newer versions due to NMS support being gradually phased out
 * **Third-Party Ecosystem Hooks:** Features built-in compatibility for *WorldGuard* (using the `lootin-container-access` flag), *PlaceholderAPI*, and custom world generators including *Terra*, *OhTheDungeonsYou'llGo*, *BetterStructures*, and *TerraFormGenerator*.
 ** Note that *CustomStructures* support has been dropped
-* Support for JustLootIt, letting you easily switch to that plugin for your loot containers!
+* Custom datapack loot tables are supported, like [Structory Towers](https://modrinth.com/datapack/structory-towers), [Nullscape](https://modrinth.com/datapack/nullscape), [Incendium](https://modrinth.com/datapack/incendium), [Terralith](https://modrinth.com/datapack/terralith) and much more!
 
 ## Upcoming Features
 * Please suggest them on the github page!!
 * Support for converting JustLootIt containers back, if servers want to switch (they have a useful utility to convert Lootin containers to JustLootIt form)
+* Support for JustLootIt, letting you easily switch to that plugin for your loot containers!
 
 ## Design Choice
 

@@ -82,7 +82,7 @@ public final class LootTableFiller {
             if (items != null && !items.isEmpty()) inv.addItem(items.toArray(new ItemStack[0]));
 
         } catch (Throwable t) {
-            plugin.getLogger().warning("LootTableFiller failed to fill loot: " + t.getMessage());
+            plugin.getLogger().warning("LootTableFiller failed to fill loot for '" + lootTableKey + "': " + t.getMessage());
         }
     }
 }

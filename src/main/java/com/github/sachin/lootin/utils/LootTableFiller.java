@@ -68,7 +68,7 @@ public final class LootTableFiller {
             }
             Random random = new Random(seed);
 
-            if (tryFillLikeVanilla(player, container, lootTable, inv, seed)) {
+            if (tryFillLikeVanilla(player, container, lootTable, inv, seed, lootTableKey)) {
                 return;
             }
 
@@ -99,7 +99,7 @@ public final class LootTableFiller {
         }
     }
 
-    private static boolean tryFillLikeVanilla(Player player, Lootable container, LootTable lootTable, Inventory inv, long seed) {
+    private static boolean tryFillLikeVanilla(Player player, Lootable container, LootTable lootTable, Inventory inv, long seed, String lootTableKey) {
         try {
             try {
                 container.setLootTable(lootTable, seed);
@@ -128,6 +128,7 @@ public final class LootTableFiller {
                 }
             }
             if (unpack == null) {
+                plugin.getLogger().info("LootTableFiller vanilla unpack for '" + lootTableKey + "': unpackLootTable not found, falling back");
                 container.setLootTable(null);
                 if (container instanceof BlockState) ((BlockState) container).update();
                 return false;
@@ -135,9 +136,19 @@ public final class LootTableFiller {
             if (unpack.getParameterCount() == 2) unpack.invoke(nmsContainer, nmsPlayer, true);
             else unpack.invoke(nmsContainer, nmsPlayer);
 
+            int filled = countItems(inv);
+            if (filled == 0) {
+                plugin.getLogger().info("LootTableFiller vanilla unpack for '" + lootTableKey + "': ran " + unpack.getParameterCount() + "-arg unpack on " + nmsContainer.getClass().getSimpleName() + " but inventory was empty, falling back");
+                container.setLootTable(null);
+                if (container instanceof BlockState) ((BlockState) container).update();
+                return false;
+            }
+
+            plugin.getLogger().info("LootTableFiller vanilla unpack for '" + lootTableKey + "': filled " + filled + " stacks via " + unpack.getParameterCount() + "-arg unpack on " + nmsContainer.getClass().getSimpleName());
             if (container instanceof BlockState) container.setLootTable(null);
             return true;
-        } catch (Throwable ignored) {
+        } catch (Throwable t) {
+            plugin.getLogger().info("LootTableFiller vanilla unpack for '" + lootTableKey + "': failed (" + t.getClass().getSimpleName() + ": " + t.getMessage() + "), falling back");
             try {
                 container.setLootTable(null);
                 if (container instanceof BlockState) ((BlockState) container).update();
@@ -145,6 +156,15 @@ public final class LootTableFiller {
             }
             return false;
         }
+    }
+
+    private static int countItems(Inventory inv) {
+        int count = 0;
+        if (inv == null) return 0;
+        for (ItemStack item : inv.getContents()) {
+            if (item != null && !item.getType().isAir()) count++;
+        }
+        return count;
     }
 
     private static Object invokeNoArg(Object target, String... names) {

@@ -66,6 +66,10 @@ public final class LootTableFiller {
             LootContext.Builder builder;
             if (loc != null) builder = new LootContext.Builder(loc);
             else builder = new LootContext.Builder(player.getLocation());
+            if (player != null) {
+                builder.killer(player);
+                builder.lootedEntity(player);
+            }
 
             LootContext context = builder.build();
 

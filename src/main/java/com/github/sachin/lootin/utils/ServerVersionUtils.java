@@ -21,7 +21,6 @@ public final class ServerVersionUtils {
     }
 
     public static ServerVersionUtils current() {
-        Bukkit.getLogger().info(CURRENT.toString());
         return CURRENT;
     }
 

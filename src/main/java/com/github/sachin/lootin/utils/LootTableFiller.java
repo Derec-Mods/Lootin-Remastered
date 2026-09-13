@@ -50,9 +50,15 @@ public final class LootTableFiller {
             }
 
             LootTable lootTable = Bukkit.getLootTable(key);
-            if (lootTable == null) return;
+            if (lootTable == null) {
+                plugin.getLogger().warning("LootTableFiller could not find loot table '" + lootTableKey + "'");
+                return;
+            }
 
-            if (!(container instanceof InventoryHolder)) return;
+            if (!(container instanceof InventoryHolder)) {
+                plugin.getLogger().warning("LootTableFiller container is not an inventory for '" + lootTableKey + "'");
+                return;
+            }
             Inventory inv = container instanceof Chest
                     ? ((Chest) container).getBlockInventory()
                     : ((InventoryHolder) container).getInventory();
@@ -85,14 +91,13 @@ public final class LootTableFiller {
             // Try to use fillInventory if available, otherwise populateLoot
             try {
                 lootTable.fillInventory(inv, random, context);
-                return;
             } catch (NoSuchMethodError | AbstractMethodError ignored) {
-                // fall through to populateLoot
+                Collection<ItemStack> items = lootTable.populateLoot(random, context);
+                if (items != null && !items.isEmpty()) inv.addItem(items.toArray(new ItemStack[0]));
             }
-
-            // populateLoot returns a list in this API - add returned items
-            Collection<ItemStack> items = lootTable.populateLoot(random, context);
-            if (items != null && !items.isEmpty()) inv.addItem(items.toArray(new ItemStack[0]));
+            if (countItems(inv) == 0) {
+                plugin.getLogger().warning("LootTableFiller produced no items for '" + lootTableKey + "'");
+            }
 
         } catch (Throwable t) {
             plugin.getLogger().warning("LootTableFiller failed to fill loot for '" + lootTableKey + "': " + t.getMessage());
@@ -128,7 +133,7 @@ public final class LootTableFiller {
                 }
             }
             if (unpack == null) {
-                plugin.getLogger().info("LootTableFiller vanilla unpack for '" + lootTableKey + "': unpackLootTable not found, falling back");
+                plugin.getLogger().warning("LootTableFiller vanilla unpack for '" + lootTableKey + "': unpackLootTable not found, falling back");
                 container.setLootTable(null);
                 if (container instanceof BlockState) ((BlockState) container).update();
                 return false;
@@ -136,24 +141,16 @@ public final class LootTableFiller {
             if (unpack.getParameterCount() == 2) unpack.invoke(nmsContainer, nmsPlayer, true);
             else unpack.invoke(nmsContainer, nmsPlayer);
 
-            int filled = 0;
-            if (inv != null) {
-                for (ItemStack item : inv.getContents()) {
-                    if (item != null && !item.getType().isAir()) filled++;
-                }
-            }
-            if (filled == 0) {
-                plugin.getLogger().info("LootTableFiller vanilla unpack for '" + lootTableKey + "': ran " + unpack.getParameterCount() + "-arg unpack on " + nmsContainer.getClass().getSimpleName() + " but inventory was empty, falling back");
+            if (countItems(inv) == 0) {
                 container.setLootTable(null);
                 if (container instanceof BlockState) ((BlockState) container).update();
                 return false;
             }
 
-            plugin.getLogger().info("LootTableFiller vanilla unpack for '" + lootTableKey + "': filled " + filled + " stacks via " + unpack.getParameterCount() + "-arg unpack on " + nmsContainer.getClass().getSimpleName());
             if (container instanceof BlockState) container.setLootTable(null);
             return true;
         } catch (Throwable t) {
-            plugin.getLogger().info("LootTableFiller vanilla unpack for '" + lootTableKey + "': failed (" + t.getClass().getSimpleName() + ": " + t.getMessage() + "), falling back");
+            plugin.getLogger().warning("LootTableFiller vanilla unpack for '" + lootTableKey + "': failed (" + t.getClass().getSimpleName() + ": " + t.getMessage() + "), falling back");
             try {
                 container.setLootTable(null);
                 if (container instanceof BlockState) ((BlockState) container).update();
@@ -161,6 +158,15 @@ public final class LootTableFiller {
             }
             return false;
         }
+    }
+
+    private static int countItems(Inventory inv) {
+        if (inv == null) return 0;
+        int count = 0;
+        for (ItemStack item : inv.getContents()) {
+            if (item != null && !item.getType().isAir()) count++;
+        }
+        return count;
     }
 
     private static Object invokeNoArg(Object target, String... names) {

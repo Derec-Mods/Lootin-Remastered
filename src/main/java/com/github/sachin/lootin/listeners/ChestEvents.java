@@ -143,37 +143,32 @@ public class ChestEvents extends BaseListener {
     }
 
 
-    //    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onItemMove(InventoryMoveItemEvent e) {
 //        if(plugin.isBlackListWorld(e.ge)) return;
-        if (e.getDestination().getHolder() instanceof HopperMinecart || e.getSource().getHolder() instanceof HopperMinecart) {
-            List<InventoryHolder> holders = Arrays.asList(e.getSource().getHolder(), e.getDestination().getHolder());
-            for (InventoryHolder h : holders) {
-                if (h == null) {
-                    continue;
-                }
-                if (h instanceof HopperMinecart) {
-                    continue;
-                }
-                if (h instanceof DoubleChest doubleChest) {
-                    PersistentDataContainer d1 = ((Chest) doubleChest.getLeftSide()).getPersistentDataContainer();
-                    PersistentDataContainer d2 = ((Chest) doubleChest.getRightSide()).getPersistentDataContainer();
-                    if (d1.has(LConstants.IDENTITY_KEY, PersistentDataType.STRING) || d2.has(LConstants.IDENTITY_KEY, PersistentDataType.STRING)) {
-                        e.setCancelled(true);
-                    }
-                } else if (h instanceof Chest) {
-                    if (ChestUtils.isLootinContainer(null, ((Chest) h), ContainerType.CHEST)) {
-                        e.setCancelled(true);
-                    }
-                } else if (h instanceof StorageMinecart) {
-                    if (ChestUtils.isLootinContainer(((StorageMinecart) h), null, ContainerType.MINECART)) {
-                        e.setCancelled(true);
-                    }
-                } else if (h instanceof Barrel) {
-                    if (ChestUtils.isLootinContainer(null, ((Barrel) h), ContainerType.BARREL)) {
-                        e.setCancelled(true);
-                    }
-                }
+        if (!plugin.getConfig().getBoolean(LConstants.PREVENT_HOPPER_EXTRACTION, true)) {
+            return;
+        }
+        InventoryHolder sourceHolder = e.getSource().getHolder();
+        if (sourceHolder instanceof DoubleChest doubleChest) {
+            if (doubleChest.getLeftSide() instanceof Chest left && left.getPersistentDataContainer().has(LConstants.IDENTITY_KEY, PersistentDataType.STRING)) {
+                e.setCancelled(true);
+                return;
+            }
+            if (doubleChest.getRightSide() instanceof Chest right && right.getPersistentDataContainer().has(LConstants.IDENTITY_KEY, PersistentDataType.STRING)) {
+                e.setCancelled(true);
+            }
+            return;
+        }
+        if (sourceHolder instanceof TileState tileState) {
+            if (tileState.getPersistentDataContainer().has(LConstants.IDENTITY_KEY, PersistentDataType.STRING)) {
+                e.setCancelled(true);
+            }
+            return;
+        }
+        if (sourceHolder instanceof StorageMinecart minecart) {
+            if (minecart.getPersistentDataContainer().has(LConstants.IDENTITY_KEY, PersistentDataType.STRING)) {
+                e.setCancelled(true);
             }
         }
     }

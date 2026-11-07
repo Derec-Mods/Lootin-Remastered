@@ -1,10 +1,22 @@
 package com.github.sachin.lootin.compat.justlootit;
 
+import com.github.sachin.lootin.Lootin;
+import com.github.sachin.lootin.utils.ChestUtils;
+import com.github.sachin.lootin.utils.ContainerType;
+import com.github.sachin.lootin.utils.LConstants;
+import com.github.sachin.lootin.utils.MessageUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.World;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.Chest;
+import org.bukkit.block.DoubleChest;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.minecart.StorageMinecart;
+import org.bukkit.loot.Lootable;
 import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataHolder;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.io.File;
@@ -74,6 +86,80 @@ public class JustLootItCompat {
         if (location != null) {
             convertingLocations.remove(location);
         }
+    }
+
+    public static boolean handleInteract(Player player, Lootable lootable, Location location) {
+        if (player == null || lootable == null || location == null) {
+            return false;
+        }
+        if (!(lootable instanceof PersistentDataHolder holder)) {
+            return false;
+        }
+        PersistentDataContainer pdc = holder.getPersistentDataContainer();
+        if (!isJLIContainer(pdc)) {
+            return false;
+        }
+        if (isConverting(location)) {
+            MessageUtils.sendActionBarStatic(player, MessageUtils.getMessageStatic(LConstants.CONVERTING_FROM_JUSTLOOTIT, player));
+            return true;
+        }
+        startConverting(location);
+        MessageUtils.sendPlayerMessage(MessageUtils.getMessageStatic(LConstants.CONVERTING_FROM_JUSTLOOTIT, player), player);
+
+        Lootin plugin = Lootin.getPlugin();
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            String lootTableKey = getLootTable(location.getWorld(), pdc);
+            plugin.getScheduler().runTaskLater(plugin, () -> {
+                try {
+                    if (lootable instanceof BlockState blockState) {
+                        ContainerType containerType = ChestUtils.getContainerType(lootable);
+                        if (containerType == null) {
+                            return;
+                        }
+                        if (containerType == ContainerType.DOUBLE_CHEST && ChestUtils.isDoubleChest(blockState)) {
+                            DoubleChest doubleChest = ChestUtils.getDoubleChest(blockState);
+                            Chest left = (Chest) doubleChest.getLeftSide();
+                            Chest right = (Chest) doubleChest.getRightSide();
+                            if (left != null) {
+                                PersistentDataContainer leftPdc = left.getPersistentDataContainer();
+                                leftPdc.set(LConstants.IDENTITY_KEY, PersistentDataType.STRING, "");
+                                if (lootTableKey != null && !lootTableKey.isEmpty()) {
+                                    leftPdc.set(LConstants.LOOTTABLE_KEY, PersistentDataType.STRING, lootTableKey);
+                                }
+                                cleanJLIKeys(leftPdc);
+                                left.update(true);
+                            }
+                            if (right != null) {
+                                PersistentDataContainer rightPdc = right.getPersistentDataContainer();
+                                rightPdc.set(LConstants.IDENTITY_KEY, PersistentDataType.STRING, "");
+                                if (lootTableKey != null && !lootTableKey.isEmpty()) {
+                                    rightPdc.set(LConstants.LOOTTABLE_KEY, PersistentDataType.STRING, lootTableKey);
+                                }
+                                cleanJLIKeys(rightPdc);
+                                right.update(true);
+                            }
+                        } else {
+                            pdc.set(LConstants.IDENTITY_KEY, PersistentDataType.STRING, "");
+                            if (lootTableKey != null && !lootTableKey.isEmpty()) {
+                                pdc.set(LConstants.LOOTTABLE_KEY, PersistentDataType.STRING, lootTableKey);
+                            }
+                            cleanJLIKeys(pdc);
+                            blockState.update(true);
+                        }
+                    } else if (lootable instanceof StorageMinecart) {
+                        pdc.set(LConstants.IDENTITY_KEY, PersistentDataType.STRING, "");
+                        if (lootTableKey != null && !lootTableKey.isEmpty()) {
+                            pdc.set(LConstants.LOOTTABLE_KEY, PersistentDataType.STRING, lootTableKey);
+                        }
+                        cleanJLIKeys(pdc);
+                    }
+                    ChestUtils.openLootinInventory(lootable, player, location, null);
+                } finally {
+                    stopConverting(location);
+                }
+            }, location, 1);
+        });
+        return true;
     }
 
     public static String getLootTable(World world, PersistentDataContainer container) {

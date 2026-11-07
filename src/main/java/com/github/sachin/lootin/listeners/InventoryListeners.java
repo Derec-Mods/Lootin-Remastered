@@ -1,5 +1,6 @@
 package com.github.sachin.lootin.listeners;
 
+import com.github.sachin.lootin.compat.justlootit.JustLootItCompat;
 import com.github.sachin.lootin.utils.ChestUtils;
 import com.github.sachin.lootin.utils.ContainerType;
 import com.github.sachin.lootin.utils.LConstants;
@@ -38,6 +39,10 @@ public class InventoryListeners extends BaseListener {
 //                ValhallaMMOListner.firstTimerChests.remove(state.getLocation());
 //                return;
 //            }
+            if (JustLootItCompat.handleInteract(player, lootable, state.getLocation())) {
+                e.setUseInteractedBlock(PlayerInteractEvent.Result.DENY);
+                return;
+            }
             boolean denyInteraction = ChestUtils.openLootinInventory(lootable, player, state.getLocation(), null);
             if (denyInteraction) {
                 e.setUseInteractedBlock(PlayerInteractEvent.Result.DENY);
@@ -54,6 +59,10 @@ public class InventoryListeners extends BaseListener {
             return;
         }
         if (e.isCancelled() && !plugin.getConfig().getBoolean(LConstants.BYPASS_GREIF_PLUGINS)) {
+            return;
+        }
+        if (JustLootItCompat.handleInteract(e.getPlayer(), minecart, minecart.getLocation())) {
+            e.setCancelled(true);
             return;
         }
         boolean denyInteraction = ChestUtils.openLootinInventory(minecart, e.getPlayer(), minecart.getLocation(), null);

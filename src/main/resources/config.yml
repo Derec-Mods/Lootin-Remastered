@@ -37,6 +37,8 @@ delete-items-on-break: true
 # weather or not to prevent lootin chest from being exploded by tnt,creepers,respawn_anchor or bed
 prevent-explosions: true
 prevent-hopper-extraction: true
+convert-justlootit-containers: true
+keep-justlootit-keys: true
 
 # list of worlds where lootin will not modify loot chests
 black-list-worlds: []

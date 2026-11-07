@@ -43,6 +43,12 @@ public class JustLootItCompat {
         if (container == null) {
             return false;
         }
+        if (!Lootin.getPlugin().getConfig().getBoolean(LConstants.CONVERT_JUSTLOOTIT_CONTAINERS, true)) {
+            return false;
+        }
+        if (container.has(LConstants.IDENTITY_KEY, PersistentDataType.STRING)) {
+            return false;
+        }
         return container.has(JLI_IDENTITY_KEY, PersistentDataType.LONG);
     }
 
@@ -56,6 +62,9 @@ public class JustLootItCompat {
 
     public static void cleanJLIKeys(PersistentDataContainer container) {
         if (container == null) {
+            return;
+        }
+        if (Lootin.getPlugin().getConfig().getBoolean(LConstants.KEEP_JUSTLOOTIT_KEYS, true)) {
             return;
         }
         container.remove(JLI_IDENTITY_KEY);

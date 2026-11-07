@@ -6,6 +6,7 @@ import java.util.*;
 
 import com.github.sachin.lootin.commands.Commands;
 import com.github.sachin.lootin.compat.*;
+import com.github.sachin.lootin.compat.justlootit.JustLootItConflictListener;
 // import com.github.sachin.lootin.compat.rwg.RWGCompat; // RWG support disabled
 import com.github.sachin.lootin.compat.scheduler.BukkitScheduler;
 import com.github.sachin.lootin.compat.scheduler.PaperScheduler;
@@ -32,16 +33,15 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import co.aikar.commands.PaperCommandManager;
 
-
-public final class Lootin extends JavaPlugin {
+public class Lootin extends JavaPlugin {
 
     private static Lootin plugin;
 
-//    private Prilib prilib;
+    // private Prilib prilib;
     private PaperCommandManager commandManager;
 
     private Scheduler scheduler;
-//    public RWGCompat rwgCompat; // RWG support disabled
+    // public RWGCompat rwgCompat; // RWG support disabled
     public List<Location> currentChestviewers = new ArrayList<>();
     public List<StorageMinecart> currentMinecartviewers = new ArrayList<>();
 
@@ -71,45 +71,57 @@ public final class Lootin extends JavaPlugin {
     public void onLoad() {
         plugin = this;
         isRunningWG = Bukkit.getPluginManager().getPlugin("WorldGuard") != null;
-        if(isRunningWG){
+        if (isRunningWG) {
             WGflag = new WGFlag();
-            plugin.getLogger().info("Found WorldGuard, registering "+LConstants.WG_FLAG_NAME+" flag");
+            plugin.getLogger().info("Found WorldGuard, registering " + LConstants.WG_FLAG_NAME + " flag");
             WGflag.registerFlag();
         }
     }
 
     @Override
     public void onEnable() {
-//        prilib = new Prilib(this);
-//        prilib.initialize();
-//        if(!prilib.isNMSEnabled()){
-//            getLogger().severe("Running incompatible minecraft version, disabling lootin...");
-//            this.getServer().getPluginManager().disablePlugin(this);
-//            return;
-//        }
+        if (getServer().getPluginManager().isPluginEnabled("JustLootIt")) {
+            getLogger().severe("====================================================");
+            getLogger().severe("JustLootIt detected running on this server!");
+            getLogger()
+                    .severe("Lootin has disabled itself for safety reasons to prevent container and event conflicts.");
+            getLogger().severe("Lootin includes built-in lossless conversion for JustLootIt containers.");
+            getLogger().severe(
+                    "To complete migration: stop the server, remove JustLootIt.jar, and start the server. (it is still an awesome plugin tho, JLI)");
+            getLogger().severe("====================================================");
+            getServer().getPluginManager().registerEvents(new JustLootItConflictListener(), this);
+            return;
+        }
+        // prilib = new Prilib(this);
+        // prilib.initialize();
+        // if(!prilib.isNMSEnabled()){
+        // getLogger().severe("Running incompatible minecraft version, disabling
+        // lootin...");
+        // this.getServer().getPluginManager().disablePlugin(this);
+        // return;
+        // }
         try {
             Class.forName("net.pl3x.purpur.event.PlayerAFKEvent");
             this.isRunningPurpur = true;
         } catch (ClassNotFoundException e) {
             this.isRunningPurpur = false;
         }
-        try{
+        try {
 
             Class.forName("io.papermc.paper.threadedregions.scheduler.RegionScheduler");
             this.isRunningPaper = true;
             getLogger().info("Running PaperMC...");
-        }catch (ClassNotFoundException ignored){
+        } catch (ClassNotFoundException ignored) {
             this.isRunningPaper = false;
         }
 
-        if(isRunningPaper){
+        if (isRunningPaper) {
             scheduler = new PaperScheduler();
-        }
-        else{
+        } else {
             scheduler = new BukkitScheduler();
         }
         // Setup reflections
-//        VersionProvider.setup();
+        // VersionProvider.setup();
 
         // Setup PlayerInteractEvent cooldown
         interactCooldown = new CooldownContainer();
@@ -119,14 +131,15 @@ public final class Lootin extends JavaPlugin {
         this.isRunningProtocolLib = getServer().getPluginManager().getPlugin("ProtocolLib") != null;
         this.commandManager = new PaperCommandManager(plugin);
         List<String> loottables = new ArrayList<>();
-        for(LootTables l : LootTables.values()) loottables.add(l.getKey().toString());
-        commandManager.getCommandCompletions().registerCompletion("loottables",c -> loottables);
+        for (LootTables l : LootTables.values())
+            loottables.add(l.getKey().toString());
+        commandManager.getCommandCompletions().registerCompletion("loottables", c -> loottables);
         commandManager.registerCommand(new Commands(plugin));
         reloadConfigs();
 
         // register listeners
         PluginManager pm = getServer().getPluginManager();
-        if(pm.isPluginEnabled("ElytraVaults")){
+        if (pm.isPluginEnabled("ElytraVaults")) {
             this.isRunningElytraVaults = true;
             getLogger().info("Found ElytraVaults, disabling Elytra item frame handling.");
         }
@@ -135,106 +148,107 @@ public final class Lootin extends JavaPlugin {
         pm.registerEvents(new InventoryListeners(), plugin);
         pm.registerEvents(new ChestEvents(), plugin);
         pm.registerEvents(new SurvivalPlacedListener(), plugin);
-        pm.registerEvents(new ItemFrameListener(),plugin);
-        pm.registerEvents(new LootGenerateListener(),plugin);
-//        if(pm.isPluginEnabled("CustomStructures")){
-//            this.isRunningCustomStructures = true;
-//            getLogger().info("Found custom structures, registering listeners...");
-//
-//            pm.registerEvents(new CustomStructuresListener(), plugin);
-//        }
-        if(pm.isPluginEnabled("Oh_the_dungeons_youll_go")){
+        pm.registerEvents(new ItemFrameListener(), plugin);
+        pm.registerEvents(new LootGenerateListener(), plugin);
+        // if(pm.isPluginEnabled("CustomStructures")){
+        // this.isRunningCustomStructures = true;
+        // getLogger().info("Found custom structures, registering listeners...");
+        //
+        // pm.registerEvents(new CustomStructuresListener(), plugin);
+        // }
+        if (pm.isPluginEnabled("Oh_the_dungeons_youll_go")) {
             getLogger().info("Found OhTheDungeons, registering listeners...");
             pm.registerEvents(new OTDLootListener(), plugin);
         }
-//        if(pm.isPluginEnabled("Realistic_World")){
-//            getLogger().info("Found RealisticWorldGenerator, trying to register compatibility addon...");
-//            this.rwgCompat = new RWGCompat();
-//            if (rwgCompat.enableRwgSupport(pm.getPlugin("Realistic_World"))) {
-//                rwgCompat.setup();
-//                getLogger().info("RealisticWorldGenerator addon successfully registered and installed");
-//            } else {
-//                getLogger().info("No need to register RealisticWorldGenerator compatibility addon");
-//            }
-//        }
-        if(pm.isPluginEnabled("BetterStructures")){
+        // if(pm.isPluginEnabled("Realistic_World")){
+        // getLogger().info("Found RealisticWorldGenerator, trying to register
+        // compatibility addon...");
+        // this.rwgCompat = new RWGCompat();
+        // if (rwgCompat.enableRwgSupport(pm.getPlugin("Realistic_World"))) {
+        // rwgCompat.setup();
+        // getLogger().info("RealisticWorldGenerator addon successfully registered and
+        // installed");
+        // } else {
+        // getLogger().info("No need to register RealisticWorldGenerator compatibility
+        // addon");
+        // }
+        // }
+        if (pm.isPluginEnabled("BetterStructures")) {
             this.isRunningBetterStructures = true;
             getLogger().info("Found BetterStructures, registering listeners...");
-            pm.registerEvents(new BetterStructuresListener(),plugin);
+            pm.registerEvents(new BetterStructuresListener(), plugin);
         }
 
-        if(isRunningProtocolLib){
-            try{
+        if (isRunningProtocolLib) {
+            try {
                 getLogger().info("Found ProtocolLib, trying to register meta data packet listener...");
                 new EntityMetaDataPacketListener();
-            }catch (NoClassDefFoundError ignore) {
+            } catch (NoClassDefFoundError ignore) {
                 isRunningProtocolLib = false;
                 getLogger().severe("Error registering meta data packet listener from protocollib");
             }
         }
-        if(getConfig().getBoolean("metrics",true)){
+        if (getConfig().getBoolean("metrics", true)) {
             getLogger().info("Enabling bstats...");
             new Metrics(this, 31790);
         }
 
-        cachedRunnable = scheduler.runTaskTimer(this,() -> {
-            if(!cachedContainers.isEmpty()){
+        cachedRunnable = scheduler.runTaskTimer(this, () -> {
+            if (!cachedContainers.isEmpty()) {
 
-                int i =0;
+                int i = 0;
                 Iterator<Map.Entry<UUID, LootinContainer>> iterator = cachedContainers.entrySet().iterator();
-                while (iterator.hasNext()){
+                while (iterator.hasNext()) {
                     Map.Entry<UUID, LootinContainer> entry = iterator.next();
                     LootinContainer container = entry.getValue();
-                    if(container.getClosingTimer()<=0){
+                    if (container.getClosingTimer() <= 0) {
                         StorageConverterUtility.save(container);
                         iterator.remove();
                         i++;
                         continue;
                     }
-                    container.setClosingTimer(container.getClosingTimer()-(10*20));
+                    container.setClosingTimer(container.getClosingTimer() - (10 * 20));
                 }
 
-                if(i!=0){
-                    plugin.debug(i+" cached containers cleared and stored in data folder");
+                if (i != 0) {
+                    plugin.debug(i + " cached containers cleared and stored in data folder");
                 }
             }
-        },1,10*20);
+        }, 1, 10 * 20);
 
         Bukkit.getLogger().info("");
         Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "  |_______|                             " +
                 "  ");
-        Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "  | Derex |     Lootin Remastered v" + getDescription().getVersion());
-        Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "  |_______|     Running on " + Bukkit.getName() + " - " + Bukkit.getVersion());
+        Bukkit.getServer().getConsoleSender()
+                .sendMessage(ChatColor.GREEN + "  | Derex |     Lootin Remastered v" + getDescription().getVersion());
+        Bukkit.getServer().getConsoleSender().sendMessage(
+                ChatColor.GREEN + "  |_______|     Running on " + Bukkit.getName() + " - " + Bukkit.getVersion());
         Bukkit.getLogger().info("");
     }
 
-
-
     @Override
     public void onDisable() {
-        if(interactCooldown != null) {
+        if (interactCooldown != null) {
             interactCooldown.getTimer().setRunning(false);
             interactCooldown.getTimer().kill();
             interactCooldown = null;
         }
-        if(cachedRunnable != null && !cachedRunnable.isCancelled()){
+        if (cachedRunnable != null && !cachedRunnable.isCancelled()) {
             cachedRunnable.cancel();
-            for(LootinContainer container : cachedContainers.values()){
+            for (LootinContainer container : cachedContainers.values()) {
                 StorageConverterUtility.save(container);
             }
             cachedContainers.clear();
         }
         // Clear reflections
-//        VersionProvider.PROVIDER.deleteAll();
+        // VersionProvider.PROVIDER.deleteAll();
     }
-
-
 
     public static Lootin getPlugin() {
         return plugin;
     }
 
-    public static NamespacedKey getKey(String key){
+    public static NamespacedKey getKey(String key) {
         return new NamespacedKey(plugin, key);
     }
 
@@ -254,57 +268,60 @@ public final class Lootin extends JavaPlugin {
         MessageUtils.send(sender, key, forceChat);
     }
 
-    public List<String> getBlackListWorlds(){
-        if(getConfig().contains("black-list-worlds")){
+    public List<String> getBlackListWorlds() {
+        if (getConfig().contains("black-list-worlds")) {
             List<String> list = getConfig().getStringList("black-list-worlds");
-            if(list != null){
+            if (list != null) {
                 return list;
             }
         }
         return new ArrayList<>();
     }
 
-    public boolean isBlackListWorld(World world){
+    public boolean isBlackListWorld(World world) {
         return getBlackListWorlds().contains(world.getName());
     }
 
-    public boolean isBlackListWorld(UUID uuid){
+    public boolean isBlackListWorld(UUID uuid) {
         World world = getServer().getWorld(uuid);
-        if(world == null){
+        if (world == null) {
             return false;
         }
         return getBlackListWorlds().contains(world.getName());
     }
 
-    public boolean isBlackListedLootable(String lootable,World world){
+    public boolean isBlackListedLootable(String lootable, World world) {
         List<String> list = plugin.getWorldManager().getBlackListStructures(world.getName());
-        if(list.contains("ALL")) return true;
-        for(String s : list){
-            if(s.startsWith("^") && lootable.startsWith(s.replace("^", ""))){
+        if (list.contains("ALL"))
+            return true;
+        for (String s : list) {
+            if (s.startsWith("^") && lootable.startsWith(s.replace("^", ""))) {
                 return true;
             }
-            if(s.endsWith("$") && lootable.endsWith(s.replace("$", ""))){
+            if (s.endsWith("$") && lootable.endsWith(s.replace("$", ""))) {
                 return true;
             }
-            if(lootable.equals(s)) return true;
+            if (lootable.equals(s))
+                return true;
 
         }
         return false;
     }
 
-    public boolean isBlackListedLootable(LootTable lootable,World world){
-        return isBlackListedLootable(lootable.getKey().toString(),world);
+    public boolean isBlackListedLootable(LootTable lootable, World world) {
+        return isBlackListedLootable(lootable.getKey().toString(), world);
     }
 
-    public List<NamespacedKey> getBlackListStructures(){
+    public List<NamespacedKey> getBlackListStructures() {
         List<String> list = new ArrayList<>();
         List<NamespacedKey> keyList = new ArrayList<>();
         try {
             list = plugin.getConfig().getStringList(LConstants.BLACK_LIST_STRUCTURES);
-            if(list.isEmpty() || list == null) return keyList;
+            if (list.isEmpty() || list == null)
+                return keyList;
             list.forEach(s -> {
 
-                if(LootTables.valueOf(s) != null){
+                if (LootTables.valueOf(s) != null) {
                     keyList.add(LootTables.valueOf(s).getKey());
                 }
             });
@@ -319,20 +336,21 @@ public final class Lootin extends JavaPlugin {
     }
 
     public WorldManager getWorldManager() {
-        if(worldManager == null) worldManager = new WorldManager();
+        if (worldManager == null)
+            worldManager = new WorldManager();
         return worldManager;
     }
 
-    public int getBarrelRowCount(){
-        if(isRunningPurpur){
+    public int getBarrelRowCount() {
+        if (isRunningPurpur) {
             File file = new File("purpur.yml");
             FileConfiguration config = YamlConfiguration.loadConfiguration(file);
-            return config.getInt("settings.blocks.barrel.rows",3)*9;
+            return config.getInt("settings.blocks.barrel.rows", 3) * 9;
         }
         return 27;
     }
 
-    public void reloadConfigs(){
+    public void reloadConfigs() {
         saveDefaultConfig();
         try {
             ConfigUpdater.update(plugin, "config.yml", new File(getDataFolder(), "config.yml"), new ArrayList<>());
@@ -344,36 +362,38 @@ public final class Lootin extends JavaPlugin {
         getLogger().info("Config file reloaded");
     }
 
-    public void reloadConfigs(CommandSender sender){
+    public void reloadConfigs(CommandSender sender) {
         reloadConfigs();
-        if(sender != null) {
+        if (sender != null) {
             send(sender, LConstants.RELOADED);
         }
     }
 
-    public void debug(String message){
-        if(getConfig().getBoolean(LConstants.DEBUG_MODE) && message != null){
-            getServer().getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&',message));
+    public void debug(String message) {
+        if (getConfig().getBoolean(LConstants.DEBUG_MODE) && message != null) {
+            getServer().getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', message));
         }
     }
 
-    public boolean isPost1_19(){
-        return ServerVersionUtils.current().isAtLeast(1,19);
+    public boolean isPost1_19() {
+        return ServerVersionUtils.current().isAtLeast(1, 19);
     }
 
-    public boolean isPost1_20_R2(){
-        return ServerVersionUtils.current().isAtLeast(1,20,2);
+    public boolean isPost1_20_R2() {
+        return ServerVersionUtils.current().isAtLeast(1, 20, 2);
     }
 
-    public boolean is1_16(){ return ServerVersionUtils.current().equals(1,16,5);}
+    public boolean is1_16() {
+        return ServerVersionUtils.current().equals(1, 16, 5);
+    }
 
     public PaperCommandManager getCommandManager() {
         return commandManager;
     }
 
-//    public Prilib getPrilib() {
-//        return prilib;
-//    }
+    // public Prilib getPrilib() {
+    // return prilib;
+    // }
 
     public Scheduler getScheduler() {
         return scheduler;

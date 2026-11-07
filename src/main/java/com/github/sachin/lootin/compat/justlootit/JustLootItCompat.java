@@ -162,6 +162,9 @@ public class JustLootItCompat {
                         }
                         cleanJLIKeys(pdc);
                     }
+                    if (plugin.getConfig().getBoolean(LConstants.LOG_JUSTLOOTIT_CONVERSIONS, true)) {
+                        plugin.getLogger().info("Converted JustLootIt container at " + location.getWorld().getName() + " (" + location.getBlockX() + ", " + location.getBlockY() + ", " + location.getBlockZ() + ") with table '" + (lootTableKey != null ? lootTableKey : "none") + "' for " + player.getName());
+                    }
                     ChestUtils.openLootinInventory(lootable, player, location, null);
                 } finally {
                     stopConverting(location);

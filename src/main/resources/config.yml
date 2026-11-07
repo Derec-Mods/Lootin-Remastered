@@ -39,6 +39,7 @@ prevent-explosions: true
 prevent-hopper-extraction: true
 convert-justlootit-containers: true
 keep-justlootit-keys: true
+log-justlootit-conversions: true
 
 # list of worlds where lootin will not modify loot chests
 black-list-worlds: []

@@ -36,6 +36,7 @@ public class LConstants {
     public static final String PREVENT_HOPPER_EXTRACTION = "prevent-hopper-extraction";
     public static final String CONVERT_JUSTLOOTIT_CONTAINERS = "convert-justlootit-containers";
     public static final String KEEP_JUSTLOOTIT_KEYS = "keep-justlootit-keys";
+    public static final String LOG_JUSTLOOTIT_CONVERSIONS = "log-justlootit-conversions";
     public static final String RESET_SEED = "reset-seed-on-fill";
     public static final String USE_NEW_LISTENER = "use-new-structure-generate-listener";
     public static final String PREVENT_ITEM_PLACING = "prevent-placing-items-in-container";

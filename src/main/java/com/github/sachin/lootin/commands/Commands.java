@@ -1,5 +1,6 @@
 package com.github.sachin.lootin.commands;
 
+import java.io.File;
 import com.github.sachin.lootin.Lootin;
 import com.github.sachin.lootin.compat.PaperCompat;
 // import com.github.sachin.lootin.compat.rwg.RWGCompat; // RWG support disabled
@@ -237,6 +238,34 @@ public class Commands extends BaseCommand{
         }
 
         return lootinContainer;
+    }
+
+    @Subcommand("stats")
+    public void onStats(CommandSender sender) {
+        if (!sender.hasPermission("lootin.command.stats")) {
+            sender.sendMessage(MessageUtils.getMessageStatic(LConstants.NO_PERMISSION, null));
+            return;
+        }
+
+        File dataFolder = new File(plugin.getDataFolder(), "data");
+        String[] dataFiles = dataFolder.list();
+        int diskCount = dataFiles != null ? dataFiles.length : 0;
+
+        sender.sendMessage(ChatColor.DARK_GRAY + "" + ChatColor.STRIKETHROUGH + "--------------------------------------------------");
+        sender.sendMessage(ChatColor.GOLD + "" + ChatColor.BOLD + "Lootin Remastered " + ChatColor.GRAY + "v" + plugin.getDescription().getVersion() + ChatColor.DARK_GRAY + " | " + ChatColor.YELLOW + "Diagnostics & Stats");
+        sender.sendMessage(ChatColor.DARK_GRAY + "" + ChatColor.STRIKETHROUGH + "--------------------------------------------------");
+        sender.sendMessage(ChatColor.GRAY + "• Containers in Memory: " + ChatColor.GREEN + plugin.cachedContainers.size());
+        sender.sendMessage(ChatColor.GRAY + "• Active Chest Viewers: " + ChatColor.GREEN + plugin.currentChestviewers.size());
+        sender.sendMessage(ChatColor.GRAY + "• Active Minecart Viewers: " + ChatColor.GREEN + plugin.currentMinecartviewers.size());
+        sender.sendMessage(ChatColor.GRAY + "• Persisted Containers (Disk): " + ChatColor.GREEN + diskCount);
+        sender.sendMessage(ChatColor.GRAY + "• Platform: " + ChatColor.WHITE + (plugin.isRunningPurpur ? "Purpur" : (plugin.isRunningPaper ? "Paper" : "Spigot/CraftBukkit")));
+        sender.sendMessage(ChatColor.GRAY + "• Hopper Extraction Protection: " + (plugin.getConfig().getBoolean(LConstants.PREVENT_HOPPER_EXTRACTION, true) ? ChatColor.GREEN + "Enabled" : ChatColor.RED + "Disabled"));
+        sender.sendMessage(ChatColor.GRAY + "• JustLootIt Migration: " + (plugin.getConfig().getBoolean(LConstants.CONVERT_JUSTLOOTIT_CONTAINERS, true) ? ChatColor.GREEN + "Enabled" : ChatColor.RED + "Disabled"));
+        sender.sendMessage(ChatColor.GRAY + "• Integrations: " +
+                ChatColor.GRAY + "WorldGuard (" + (plugin.isRunningWG ? ChatColor.GREEN + "yes" : ChatColor.RED + "no") + ChatColor.GRAY + "), " +
+                ChatColor.GRAY + "ProtocolLib (" + (plugin.isRunningProtocolLib ? ChatColor.GREEN + "yes" : ChatColor.RED + "no") + ChatColor.GRAY + "), " +
+                ChatColor.GRAY + "BetterStructures (" + (plugin.isRunningBetterStructures ? ChatColor.GREEN + "yes" : ChatColor.RED + "no") + ChatColor.GRAY + ")");
+        sender.sendMessage(ChatColor.DARK_GRAY + "" + ChatColor.STRIKETHROUGH + "--------------------------------------------------");
     }
 
 

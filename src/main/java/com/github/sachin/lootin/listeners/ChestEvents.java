@@ -151,23 +151,43 @@ public class ChestEvents extends BaseListener {
         }
         InventoryHolder sourceHolder = e.getSource().getHolder();
         if (sourceHolder instanceof DoubleChest doubleChest) {
-            if (doubleChest.getLeftSide() instanceof Chest left && left.getPersistentDataContainer().has(LConstants.IDENTITY_KEY, PersistentDataType.STRING)) {
-                e.setCancelled(true);
-                return;
+            if (doubleChest.getLeftSide() instanceof Chest left) {
+                if (plugin.isBlackListWorld(left.getWorld())) {
+                    return;
+                }
+                if (left.getPersistentDataContainer().has(LConstants.IDENTITY_KEY, PersistentDataType.STRING)
+                        || (left.getLootTable() != null && !plugin.isBlackListedLootable(left.getLootTable(), left.getWorld()))) {
+                    e.setCancelled(true);
+                    return;
+                }
             }
-            if (doubleChest.getRightSide() instanceof Chest right && right.getPersistentDataContainer().has(LConstants.IDENTITY_KEY, PersistentDataType.STRING)) {
-                e.setCancelled(true);
+            if (doubleChest.getRightSide() instanceof Chest right) {
+                if (plugin.isBlackListWorld(right.getWorld())) {
+                    return;
+                }
+                if (right.getPersistentDataContainer().has(LConstants.IDENTITY_KEY, PersistentDataType.STRING)
+                        || (right.getLootTable() != null && !plugin.isBlackListedLootable(right.getLootTable(), right.getWorld()))) {
+                    e.setCancelled(true);
+                }
             }
             return;
         }
         if (sourceHolder instanceof TileState tileState) {
-            if (tileState.getPersistentDataContainer().has(LConstants.IDENTITY_KEY, PersistentDataType.STRING)) {
+            if (plugin.isBlackListWorld(tileState.getWorld())) {
+                return;
+            }
+            if (tileState.getPersistentDataContainer().has(LConstants.IDENTITY_KEY, PersistentDataType.STRING)
+                    || (tileState instanceof Lootable lootable && lootable.getLootTable() != null && !plugin.isBlackListedLootable(lootable.getLootTable(), tileState.getWorld()))) {
                 e.setCancelled(true);
             }
             return;
         }
         if (sourceHolder instanceof StorageMinecart minecart) {
-            if (minecart.getPersistentDataContainer().has(LConstants.IDENTITY_KEY, PersistentDataType.STRING)) {
+            if (plugin.isBlackListWorld(minecart.getWorld())) {
+                return;
+            }
+            if (minecart.getPersistentDataContainer().has(LConstants.IDENTITY_KEY, PersistentDataType.STRING)
+                    || (minecart.getLootTable() != null && !plugin.isBlackListedLootable(minecart.getLootTable(), minecart.getWorld()))) {
                 e.setCancelled(true);
             }
         }

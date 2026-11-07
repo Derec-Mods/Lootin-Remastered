@@ -76,6 +76,138 @@ public class JustLootItCompat {
         }
     }
 
+    public static String getLootTable(World world, PersistentDataContainer container) {
+        if (container == null) {
+            return null;
+        }
+        if (container.has(JLI_TABLE_KEY_KEY, PersistentDataType.STRING)) {
+            String key = container.get(JLI_TABLE_KEY_KEY, PersistentDataType.STRING);
+            String namespace = container.has(JLI_TABLE_NAMESPACE_KEY, PersistentDataType.STRING)
+                    ? container.get(JLI_TABLE_NAMESPACE_KEY, PersistentDataType.STRING)
+                    : "minecraft";
+            if (key != null && !key.isEmpty()) {
+                return namespace + ":" + key;
+            }
+        }
+        long id = getJLIId(container);
+        if (id < 0) {
+            return null;
+        }
+        String fromPlugin = getLootTableFromPlugin(world, id);
+        if (fromPlugin != null && !fromPlugin.isEmpty()) {
+            return fromPlugin;
+        }
+        return getLootTableFromStorageFiles(world, id);
+    }
+
+    private static String getLootTableFromPlugin(World world, long id) {
+        try {
+            org.bukkit.plugin.Plugin jli = Bukkit.getPluginManager().getPlugin("JustLootIt");
+            if (jli == null || !jli.isEnabled()) {
+                return null;
+            }
+            java.lang.reflect.Method versionHandlerMethod = jli.getClass().getMethod("versionHandler");
+            Object versionHandler = versionHandlerMethod.invoke(jli);
+            java.lang.reflect.Method getLevelMethod = versionHandler.getClass().getMethod("getLevel", World.class);
+            Object level = getLevelMethod.invoke(versionHandler, world);
+            Class<?> storageCapClass = Class.forName("me.lauriichan.spigot.justlootit.capability.StorageCapability");
+            java.lang.reflect.Method getCapMethod = level.getClass().getMethod("getCapability", Class.class);
+            Object optCap = getCapMethod.invoke(level, storageCapClass);
+            if (optCap instanceof java.util.Optional<?> optional && optional.isPresent()) {
+                Object cap = optional.get();
+                java.lang.reflect.Method storageMethod = cap.getClass().getMethod("storage");
+                Object storage = storageMethod.invoke(cap);
+                java.lang.reflect.Method getMethod = storage.getClass().getMethod("get", long.class);
+                Object stored = getMethod.invoke(storage, id);
+                if (stored != null) {
+                    java.lang.reflect.Method valueMethod = stored.getClass().getMethod("value");
+                    Object val = valueMethod.invoke(stored);
+                    if (val != null) {
+                        try {
+                            java.lang.reflect.Method getLootTableKeyMethod = val.getClass().getMethod("getLootTableKey");
+                            Object keyObj = getLootTableKeyMethod.invoke(val);
+                            if (keyObj instanceof NamespacedKey nk) {
+                                return nk.toString();
+                            }
+                        } catch (NoSuchMethodException ignored) {
+                        }
+                    }
+                }
+            }
+        } catch (Throwable ignored) {
+        }
+        return null;
+    }
+
+    private static String getLootTableFromStorageFiles(World world, long id) {
+        File folder = getJLIStorageFolder(world);
+        if (folder == null || !folder.exists()) {
+            return null;
+        }
+        int fileId = (int) (id >> 10);
+        int valueId = (int) (id & 1023);
+        String hexName = Integer.toHexString(fileId);
+        File[] candidates = new File[] {
+            new File(folder, hexName + ".jlti"),
+            new File(folder, hexName + ".vjli"),
+            new File(folder, hexName + ".jli"),
+            new File(folder, "rafstorage.jlti"),
+            new File(folder, "rafstorage.jli")
+        };
+        for (File file : candidates) {
+            if (!file.exists() || !file.isFile()) {
+                continue;
+            }
+            String result = readLootTableFromFile(file, valueId);
+            if (result != null) {
+                return result;
+            }
+        }
+        return null;
+    }
+
+    private static String readLootTableFromFile(File file, int valueId) {
+        try (java.io.RandomAccessFile raf = new java.io.RandomAccessFile(file, "r")) {
+            long lookupOffset = 5L + (8L * valueId);
+            if (raf.length() < lookupOffset + 8L) {
+                return null;
+            }
+            raf.seek(lookupOffset);
+            long dataOffset = raf.readLong();
+            if (dataOffset <= 0 || dataOffset >= raf.length()) {
+                return null;
+            }
+            raf.seek(dataOffset);
+            int typeId = raf.readUnsignedShort();
+            int version = raf.readUnsignedShort();
+            int dataLength = raf.readInt();
+            if (dataLength <= 0 || dataOffset + 8L + dataLength > raf.length()) {
+                return null;
+            }
+            if (typeId == 16 || typeId == 18) {
+                int nsLen = raf.readInt();
+                if (nsLen <= 0 || nsLen > 256) {
+                    return null;
+                }
+                byte[] nsBytes = new byte[nsLen];
+                raf.readFully(nsBytes);
+                String namespace = new String(nsBytes, java.nio.charset.StandardCharsets.UTF_8);
+
+                int keyLen = raf.readInt();
+                if (keyLen <= 0 || keyLen > 256) {
+                    return null;
+                }
+                byte[] keyBytes = new byte[keyLen];
+                raf.readFully(keyBytes);
+                String key = new String(keyBytes, java.nio.charset.StandardCharsets.UTF_8);
+
+                return namespace + ":" + key;
+            }
+        } catch (Throwable ignored) {
+        }
+        return null;
+    }
+
     public static File getJLIStorageFolder(World world) {
         if (world == null) {
             return null;

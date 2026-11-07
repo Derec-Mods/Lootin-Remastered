@@ -28,6 +28,7 @@ messages:
   elytra-item-frame-removed: "&aElytra ItemFrame removed."
   cant-put-items-in-loot-container: "&cCan't put items in loot containers!!"
   look-at-container: "&cLook at a container while executing command!"
+  converting-from-justlootit: "&6Converting container from JustLootIt..."
 
 # when set to false, on breaking any lootin container by a player, the contents that belong to player's unique loot will drop.
 # when set to true, on breaking any lootin container nothing will drop.

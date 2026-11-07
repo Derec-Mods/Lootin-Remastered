@@ -67,6 +67,7 @@ public class LConstants {
     public static final String ELYTRA_IF_REMOVED = "messages.elytra-item-frame-removed";
     public static final String CANT_PLACE_ITEMS = "messages.cant-put-items-in-loot-container";
     public static final String LOOK_AT_CONTAINER = "messages.look-at-container";
+    public static final String CONVERTING_FROM_JUSTLOOTIT = "messages.converting-from-justlootit";
 
 
     public static final String SERVER_VERSION = "";

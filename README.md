@@ -25,11 +25,15 @@ When a player opens a naturally generated chest, barrel, or minecart, they recei
 * **Third-Party Ecosystem Hooks:** Features built-in compatibility for *WorldGuard* (using the `lootin-container-access` flag), *PlaceholderAPI*, and custom world generators including *Terra*, *OhTheDungeonsYou'llGo*, *BetterStructures*, and *TerraFormGenerator*.
 ** Note that *CustomStructures* support has been dropped
 * Custom datapack loot tables are supported, like [Structory Towers](https://modrinth.com/datapack/structory-towers), [Nullscape](https://modrinth.com/datapack/nullscape), [Incendium](https://modrinth.com/datapack/incendium), [Terralith](https://modrinth.com/datapack/terralith) and much more!
+* **High-Concurrency Storage:** Containers only load into RAM while open and automatically purge from memory when closed. Whether you have 10 or 10,000 players, idle containers consume 0 MB of RAM with zero world-save lag.
+* **Friendly JustLootIt Interoperability:** Zero lock-in! Built-in lossless lazy migration converts JustLootIt containers on first open, while JustLootIt offers a tool to convert Lootin containers to their format. Switch between either plugin seamlessly.
+* **Hopper & Extraction Protection:** Prevents hoppers and automated extractors from siphoning loot out of unlooted and instanced containers (`prevent-hopper-extraction: true`).
+* **Real-Time Diagnostics:** Run `/lootin stats` to view memory cache size, disk-persisted containers, server platform, and active hooks.
 
 ## Upcoming Features
-* Please suggest them on the github page!!
-* Support for converting JustLootIt containers back, if servers want to switch (they have a useful utility to convert Lootin containers to JustLootIt form)
-* Support for JustLootIt, letting you easily switch to that plugin for your loot containers!
+* Piston movement and retraction protection for loot containers.
+* Automated disk storage cleanup on container break.
+* Maybe even a mod port for Fabric / Forge / Neoforge
 
 ## Design Choice
 

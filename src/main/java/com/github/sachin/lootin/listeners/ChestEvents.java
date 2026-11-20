@@ -4,6 +4,7 @@ import com.github.sachin.lootin.utils.ChestUtils;
 import com.github.sachin.lootin.utils.ContainerType;
 import com.github.sachin.lootin.utils.LConstants;
 import com.github.sachin.lootin.utils.MessageUtils;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.TreeType;
@@ -273,8 +274,10 @@ public class ChestEvents extends BaseListener {
                 if (block.getState() instanceof Chest chest && !(face == BlockFace.UP || face == BlockFace.DOWN)) {
                     if (ChestUtils.isLootinContainer(null, chest, ContainerType.CHEST)) {
                         b.setType(Material.AIR);
-                        item.setAmount(1);
-                        player.getWorld().dropItemNaturally(b.getLocation().add(0.5, 0.5, 0.5), item);
+                        if (player.getGameMode() != GameMode.CREATIVE) {
+                            item.setAmount(1);
+                            player.getWorld().dropItemNaturally(b.getLocation().add(0.5, 0.5, 0.5), item);
+                        }
                         MessageUtils.sendActionBarStatic(player, MessageUtils.getMessageStatic(LConstants.CANT_PLACE_DCHEST, player));
                         break;
                     }

@@ -68,10 +68,11 @@ public final class LootTableFiller {
             else if (container instanceof Entity) loc = ((Entity) container).getLocation();
 
             long seed = System.nanoTime();
-            if (resetSeed && loc != null) {
+            if (!resetSeed && loc != null) {
                 long worldSeed = loc.getWorld().getSeed();
                 seed = worldSeed ^ ((long)loc.getBlockX() * 73428767L + (long)loc.getBlockY() * 9127L + (long)loc.getBlockZ() * 1361L);
             }
+            plugin.debug("fill key=" + lootTableKey + " resetSeed=" + resetSeed + " seed=" + seed);
             Random random = new Random(seed);
 
             if (tryFillLikeVanilla(player, container, lootTable, inv, seed, lootTableKey)) {

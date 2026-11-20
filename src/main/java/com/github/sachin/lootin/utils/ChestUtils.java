@@ -267,8 +267,11 @@ public class ChestUtils{
             Chest chestRight = ((Chest) doubleChest.getRightSide());
 //            boolean changed = false;
             ArrayList<ItemStack> chestContents = new ArrayList<>();
-            chestContents.addAll(getContainerItems(null,chestLeft,ContainerType.CHEST,player));
-            chestContents.addAll(getContainerItems(null,chestRight,ContainerType.CHEST,player));
+            List<ItemStack> left = getContainerItems(null,chestLeft,ContainerType.CHEST,player);
+            List<ItemStack> right = getContainerItems(null,chestRight,ContainerType.CHEST,player);
+            if(left == null || right == null) return null;
+            chestContents.addAll(left);
+            chestContents.addAll(right);
             inventory = doubleChest.getInventory();
             if(!chestContents.isEmpty()){
                 return chestContents;
@@ -328,7 +331,7 @@ public class ChestUtils{
                     items = Arrays.asList(inventory.getContents());
                 }
                 inventory.clear();
-                return items;
+                return fireOpenEvent(player, lootable, items);
             }
             else if(data.has(LConstants.DATA_KEY, DataType.ITEM_STACK_ARRAY)){
                 if(plugin.getWorldManager().shouldResetSeed(player.getWorld().getName()) && !inventory.isEmpty()){
@@ -338,17 +341,22 @@ public class ChestUtils{
                     items = Arrays.asList(data.get(LConstants.DATA_KEY, DataType.ITEM_STACK_ARRAY));
                 }
                 inventory.clear();
-                return items;
+                return fireOpenEvent(player, lootable, items);
             }
         }
         ArrayList<ItemStack> chestContents = new ArrayList<>();
         Collections.addAll(chestContents, inventory.getContents());
-        LootinInventoryOpenEvent event = new LootinInventoryOpenEvent(player,lootable,chestContents,true);
-        Bukkit.getServer().getPluginManager().callEvent(event);
-        if(event.isCancelled()) return null;
-        setContainerItems(minecart, block, type, event.getItems(), LConstants.DATA_KEY.getKey());
+        List<ItemStack> opened = fireOpenEvent(player, lootable, chestContents);
+        if(opened == null) return null;
+        setContainerItems(minecart, block, type, opened, LConstants.DATA_KEY.getKey());
         inventory.clear();
-        return event.getItems();
+        return opened;
+    }
+
+    private static List<ItemStack> fireOpenEvent(Player player, Lootable lootable, List<ItemStack> items) {
+        LootinInventoryOpenEvent event = new LootinInventoryOpenEvent(player, lootable, items, true);
+        Bukkit.getServer().getPluginManager().callEvent(event);
+        return event.isCancelled() ? null : event.getItems();
     }
 
 //    this is used to change from old way to store items as String to new way of storing them as ConfigurationSection
